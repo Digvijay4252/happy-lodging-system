@@ -1,0 +1,93 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="section-title mb-0">Customer Feedback</h3>
+  <a class="btn btn-outline-secondary" routerLink="/admin">Back to Dashboard</a>
+</div>
+
+<div class="card surface-card p-3">
+  <div class="d-flex justify-content-end mb-2">
+    <div class="btn-group" role="group" aria-label="view mode">
+      <button class="btn btn-outline-primary btn-sm" [class.active]="viewMode === 'tiles'" (click)="setViewMode('tiles')" type="button">
+        Tiles View
+      </button>
+      <button class="btn btn-outline-primary btn-sm" [class.active]="viewMode === 'table'" (click)="setViewMode('table')" type="button">
+        Table View
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="filters" class="row g-2 mb-3">
+    <div class="col-md-4">
+      <input class="form-control" placeholder="Search comment/customer/booking/room" formControlName="q" />
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" formControlName="sentiment">
+        <option value="">All Sentiment</option>
+        <option value="positive">positive</option>
+        <option value="neutral">neutral</option>
+        <option value="negative">negative</option>
+      </select>
+    </div>
+  </form>
+
+  <div *ngIf="viewMode === 'tiles'">
+    <div *ngFor="let f of feedbacks" class="list-row p-3 mb-2">
+      <div class="d-flex justify-content-between align-items-start gap-2">
+        <div>
+          <div class="fw-semibold">
+            {{ f.customer?.name || '-' }} | Booking {{ f.booking?.booking_id || f.booking_id }} | Room #{{ f.booking?.room?.room_number || '-' }}
+          </div>
+          <div class="my-1">{{ f.comment }}</div>
+          <div class="small">
+            Sentiment:
+            <span class="sent-pill" [ngClass]="sentimentClass(f.sentiment)">{{ f.sentiment || 'pending' }}</span>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary" type="button" (click)="openDetails(f)">Open</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap" *ngIf="viewMode === 'table'">
+    <table class="table table-sm align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Booking</th>
+          <th>Room</th>
+          <th>Comment</th>
+          <th>Sentiment</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of feedbacks">
+          <td>{{ f.customer?.name || '-' }}</td>
+          <td>{{ f.booking?.booking_id || f.booking_id }}</td>
+          <td>#{{ f.booking?.room?.room_number || '-' }}</td>
+          <td>{{ f.comment }}</td>
+          <td><span class="sent-pill" [ngClass]="sentimentClass(f.sentiment)">{{ f.sentiment || 'pending' }}</span></td>
+          <td><button class="btn btn-sm btn-outline-secondary" type="button" (click)="openDetails(f)">Open</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="muted" *ngIf="!feedbacks.length">No feedback available.</div>
+</div>
+
+<div *ngIf="showFeedbackPopup && selectedFeedback" class="ops-modal-backdrop" (click)="closeDetails()">
+  <div class="ops-modal card p-4" (click)="$event.stopPropagation()">
+    <h4 class="mb-3">Feedback Details</h4>
+    <div class="summary-box">
+      <div><strong>Customer:</strong> {{ selectedFeedback.customer?.name || '-' }} ({{ selectedFeedback.customer?.email || '-' }})</div>
+      <div><strong>Booking:</strong> {{ selectedFeedback.booking?.booking_id || selectedFeedback.booking_id }}</div>
+      <div><strong>Room:</strong> #{{ selectedFeedback.booking?.room?.room_number || '-' }} - {{ selectedFeedback.booking?.room?.type || '-' }}</div>
+      <div><strong>Sentiment:</strong> <span class="sent-pill" [ngClass]="sentimentClass(selectedFeedback.sentiment)">{{ selectedFeedback.sentiment || 'pending' }}</span></div>
+      <div class="mt-2"><strong>Comment:</strong></div>
+      <div>{{ selectedFeedback.comment }}</div>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+      <button class="btn btn-outline-secondary" (click)="closeDetails()">Close</button>
+    </div>
+  </div>
+</div>

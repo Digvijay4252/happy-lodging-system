@@ -1,0 +1,30 @@
+<div *ngIf="open && room" class="ops-modal-backdrop" (click)="close()">
+  <div class="ops-modal card p-4" (click)="$event.stopPropagation()">
+    <h4 class="mb-3 modal-title">Update Room Status</h4>
+
+    <div class="summary-box mb-3">
+      <div><strong>Room:</strong> #{{ room.room_number }} (ID: {{ room.id }})</div>
+      <div><strong>Type:</strong> {{ room.type }}</div>
+      <div><strong>Current Status:</strong> {{ room.status }}</div>
+      <div><strong>Price:</strong> {{ room.price }}</div>
+    </div>
+
+    <div class="mt-1">
+      <label class="form-label">New Status</label>
+      <select class="form-select" [(ngModel)]="localStatus">
+        <option>Available</option>
+        <option>Occupied</option>
+        <option>Cleaning</option>
+        <option>Maintenance</option>
+      </select>
+    </div>
+
+    <div class="d-flex gap-2 mt-3 justify-content-end">
+      <button class="btn btn-outline-secondary" type="button" (click)="close()">Close</button>
+      <button class="btn btn-dark" type="button" [disabled]="saving" (click)="save()">
+        {{ saving ? 'Updating...' : 'Update' }}
+      </button>
+    </div>
+  </div>
+</div>
+

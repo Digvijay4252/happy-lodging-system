@@ -8,7 +8,12 @@
     <div class="card surface-card p-3">
       <h5>Create Service Ticket</h5>
       <form [formGroup]="ticketForm" (ngSubmit)="createTicket()">
-        <input class="form-control mb-2" type="number" placeholder="Booking ID" formControlName="booking_id" />
+        <select class="form-select mb-2" formControlName="booking_id">
+          <option [ngValue]="null">Select Booking</option>
+          <option *ngFor="let b of bookings" [ngValue]="b.id">
+            {{ b.booking_id }} | Room #{{ b.room?.room_number || '-' }} | {{ b.customer?.name || 'Customer' }}
+          </option>
+        </select>
         <textarea class="form-control mb-2" rows="3" placeholder="Description" formControlName="description"></textarea>
         <button class="btn btn-warning">Create Ticket</button>
       </form>
@@ -17,24 +22,89 @@
 
   <div class="col-lg-7">
     <div class="card surface-card p-3">
-      <h5>Tickets</h5>
-      <div *ngFor="let t of tickets" class="list-row p-3 mb-2">
-        <div class="fw-semibold">#{{ t.id }} | Booking {{ t.booking_id }}</div>
-        <div class="muted mb-2">{{ t.description }}</div>
-        <div class="small mb-2">Assigned: {{ t.assigned_staff?.name || 'Unassigned' }} | Current: {{ t.status }}</div>
-
-        <div class="d-flex gap-2 align-items-center flex-wrap">
-          <select #statusSel class="form-select form-select-sm w-auto">
-            <option [selected]="t.status === 'Open'">Open</option>
-            <option [selected]="t.status === 'InProgress'">InProgress</option>
-            <option [selected]="t.status === 'Resolved'">Resolved</option>
-            <option [selected]="t.status === 'Closed'">Closed</option>
-          </select>
-          <input #assignSel class="form-control form-control-sm w-auto" type="number" placeholder="Assign Staff ID" />
-          <button class="btn btn-sm btn-primary" (click)="updateTicket(t.id, statusSel.value, +assignSel.value || undefined)">Update</button>
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+        <h5 class="mb-0">Tickets</h5>
+        <div class="btn-group" role="group" aria-label="view mode">
+          <button class="btn btn-outline-primary btn-sm" [class.active]="viewMode === 'tiles'" (click)="setViewMode('tiles')" type="button">
+            Tiles View
+          </button>
+          <button class="btn btn-outline-primary btn-sm" [class.active]="viewMode === 'table'" (click)="setViewMode('table')" type="button">
+            Table View
+          </button>
         </div>
       </div>
-      <div class="muted" *ngIf="!tickets.length">No tickets found.</div>
+
+      <form [formGroup]="filters" class="row g-2 mb-3">
+        <div class="col-md-4">
+          <input class="form-control" placeholder="Search id/booking/desc/staff" formControlName="q" />
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" formControlName="status">
+            <option value="">All Status</option>
+            <option>Open</option>
+            <option>InProgress</option>
+            <option>Resolved</option>
+            <option>Closed</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input class="form-control" type="date" formControlName="from" />
+        </div>
+        <div class="col-md-2">
+          <input class="form-control" type="date" formControlName="to" />
+        </div>
+      </form>
+
+      <div *ngIf="viewMode === 'tiles'">
+        <div *ngFor="let t of filteredTickets" class="list-row p-3 mb-2">
+          <div class="fw-semibold">
+            #{{ t.id }} | Booking {{ t.booking_id }} | Room #{{ t.booking?.room?.room_number || '-' }}
+          </div>
+          <div class="muted mb-2">{{ t.description }}</div>
+          <div class="small mb-2">Assigned: {{ t.assigned_staff?.name || 'Unassigned' }}</div>
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span class="status-pill" [ngClass]="statusClass(t.status)">{{ t.status }}</span>
+            <button class="btn btn-sm btn-primary" type="button" (click)="openTicketPopup(t)">Open</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap" *ngIf="viewMode === 'table'">
+        <table class="table table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Ticket</th>
+              <th>Booking / Room</th>
+              <th>Description</th>
+              <th>Assigned</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of filteredTickets">
+              <td>#{{ t.id }}</td>
+              <td>{{ t.booking_id }} / #{{ t.booking?.room?.room_number || '-' }}</td>
+              <td>{{ t.description }}</td>
+              <td>{{ t.assigned_staff?.name || 'Unassigned' }}</td>
+              <td><span class="status-pill" [ngClass]="statusClass(t.status)">{{ t.status }}</span></td>
+              <td><button class="btn btn-sm btn-outline-secondary" type="button" (click)="openTicketPopup(t)">Open</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="muted" *ngIf="!filteredTickets.length">
+        No tickets found.
+      </div>
     </div>
   </div>
 </div>
+
+<app-ticket-update-popup
+  [open]="showTicketPopup"
+  [ticket]="selectedTicket"
+  [saving]="saving"
+  (closed)="closeTicketPopup()"
+  (saved)="updateTicket(selectedTicket.id, $event.status, $event.assigned_staff_id)"
+></app-ticket-update-popup>

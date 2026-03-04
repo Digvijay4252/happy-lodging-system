@@ -4,31 +4,10 @@
 </div>
 
 <div class="row g-3">
-  <div class="col-lg-6">
-    <div class="card surface-card p-3 mb-3">
-      <h5>Booking Ops</h5>
-      <input class="form-control mb-1" placeholder="Booking ID or Booking Code (e.g. 12 or BKG-1A2B3C)" [formControl]="bookingId" />
-      <div class="small muted mb-2">Use the numeric `id` or booking code from Admin All Bookings page.</div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-primary" (click)="checkIn()">Check-In</button>
-        <button class="btn btn-success" (click)="checkOut()">Check-Out</button>
-      </div>
-    </div>
+  <div class="col-12">
+    <app-booking-ops></app-booking-ops>
   </div>
-
-  <div class="col-lg-6">
-    <div class="card surface-card p-3">
-      <h5>Update Room Status</h5>
-      <form [formGroup]="roomForm" (ngSubmit)="updateRoom()">
-        <input class="form-control mb-2" type="number" placeholder="Room ID" formControlName="roomId" />
-        <select class="form-select mb-2" formControlName="status">
-          <option>Available</option>
-          <option>Occupied</option>
-          <option>Cleaning</option>
-          <option>Maintenance</option>
-        </select>
-        <button class="btn btn-dark">Update</button>
-      </form>
-    </div>
+  <div class="col-12">
+    <app-room-status></app-room-status>
   </div>
 </div>

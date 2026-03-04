@@ -44,6 +44,10 @@ export class HotelService {
     return this.http.post(`${this.base}/bookings`, payload);
   }
 
+  roomBookedDates(roomId: number) {
+    return this.http.get<any>(`${this.base}/rooms/${roomId}/booked-dates`);
+  }
+
   myBookings() {
     return this.http.get<any>(`${this.base}/bookings/me`);
   }
@@ -54,6 +58,22 @@ export class HotelService {
 
   payBooking(id: number) {
     return this.http.post(`${this.base}/bookings/${id}/pay`, {});
+  }
+
+  createIssue(payload: { booking_id: number; description: string }) {
+    return this.http.post<any>(`${this.base}/bookings/issues`, payload);
+  }
+
+  myIssues() {
+    return this.http.get<any>(`${this.base}/bookings/issues/me`);
+  }
+
+  submitFeedback(payload: { booking_id: number; comment: string }) {
+    return this.http.post<any>(`${this.base}/bookings/feedback`, payload);
+  }
+
+  myFeedbacks() {
+    return this.http.get<any>(`${this.base}/bookings/feedback/me`);
   }
 
   adminDashboard() {
@@ -84,6 +104,26 @@ export class HotelService {
     return this.http.patch(`${this.base}/staff/bookings/${id}/check-out`, {});
   }
 
+  staffBookings(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/staff/bookings`, { params });
+  }
+
+  staffRooms(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/staff/rooms`, { params });
+  }
+
   serviceTickets() {
     return this.http.get<any>(`${this.base}/staff/tickets`);
   }
@@ -94,6 +134,26 @@ export class HotelService {
 
   updateTicket(id: number, payload: { status?: string; assigned_staff_id?: number }) {
     return this.http.patch(`${this.base}/staff/tickets/${id}`, payload);
+  }
+
+  staffFeedbacks(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/staff/feedbacks`, { params });
+  }
+
+  adminFeedbacks(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/admin/feedbacks`, { params });
   }
 
   aiRecommendations(budget?: number) {

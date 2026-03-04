@@ -1,20 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
-import { ToastService } from '../../../core/services/toast.service';
 import { environment } from '../../../../environments/environment';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { BookingPopupComponent } from '../components/booking-popup/booking-popup.component';
 
 @Component({
   standalone: true,
   selector: 'app-customer-dashboard',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, BookingPopupComponent],
   templateUrl: './customer-dashboard.component.html',
   styleUrl: './customer-dashboard.component.scss',
 })
-export class CustomerDashboardComponent implements OnInit {
+export class CustomerDashboardComponent implements OnInit, OnDestroy {
   rooms: any[] = [];
+  selectedRoom: any | null = null;
+  showBookingModal = false;
+  private destroy$ = new Subject<void>();
 
   filters = this.fb.group({
     checkIn: [''],
@@ -24,7 +28,7 @@ export class CustomerDashboardComponent implements OnInit {
     maxPrice: [''],
   });
 
-  constructor(private fb: FormBuilder, private hotel: HotelService, private toast: ToastService) {}
+  constructor(private fb: FormBuilder, private hotel: HotelService) {}
 
   resolveImageUrl(imageUrl: string): string {
     if (!imageUrl) return '';
@@ -35,26 +39,28 @@ export class CustomerDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadRooms();
+
+    this.filters.valueChanges
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe(() => this.loadRooms());
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadRooms() {
     this.hotel.listRooms(this.filters.value).subscribe((res) => (this.rooms = res.rooms || []));
   }
 
-  book(roomId: number) {
-    const { checkIn, checkOut } = this.filters.value;
-    if (!checkIn || !checkOut) {
-      this.toast.info('Select check-in and check-out dates');
-      return;
-    }
+  openBookingModal(room: any) {
+    this.selectedRoom = room;
+    this.showBookingModal = true;
+  }
 
-    this.hotel
-      .createBooking({ room_id: roomId, check_in: checkIn, check_out: checkOut })
-      .subscribe({
-        next: () => {
-          this.toast.success('Booking confirmed');
-        },
-        error: (err) => this.toast.error(err.error?.message || 'Booking failed'),
-      });
+  closeBookingModal() {
+    this.showBookingModal = false;
+    this.selectedRoom = null;
   }
 }

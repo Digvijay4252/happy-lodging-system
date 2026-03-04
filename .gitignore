@@ -39,6 +39,8 @@ frontend/dist/
 backend/uploads/
 backend/*.sqlite
 backend/*.db
+backend/package-lock.json
+backend/schema.sql
 
 # Test / cache
 .nyc_output/

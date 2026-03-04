@@ -16,6 +16,7 @@ const upload = multer({ storage });
 
 router.get('/', roomController.listRooms);
 router.get('/:id', roomController.getRoomById);
+router.get('/:id/booked-dates', roomController.getRoomBookedDates);
 
 router.post('/', authMiddleware, roleMiddleware('admin'), createRoomValidation, roomController.createRoom);
 router.put('/:id', authMiddleware, roleMiddleware('admin'), roomController.updateRoom);

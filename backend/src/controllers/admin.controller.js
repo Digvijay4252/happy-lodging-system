@@ -170,3 +170,48 @@ exports.reports = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.listFeedbacks = async (req, res, next) => {
+  try {
+    const { q, sentiment } = req.query;
+    const where = {};
+    if (sentiment) where.sentiment = sentiment;
+
+    const feedbacks = await db.Feedback.findAll({
+      where,
+      include: [
+        {
+          model: db.Booking,
+          as: 'booking',
+          include: [{ model: db.Room, as: 'room', attributes: ['id', 'room_number', 'type'] }],
+        },
+        { model: db.User, as: 'customer', attributes: ['id', 'name', 'email'] },
+      ],
+      order: [['id', 'DESC']],
+    });
+
+    const filtered = q
+      ? feedbacks.filter((f) => {
+          const s = String(q).toLowerCase();
+          return (
+            String(f.comment || '')
+              .toLowerCase()
+              .includes(s) ||
+            String(f.customer?.name || '')
+              .toLowerCase()
+              .includes(s) ||
+            String(f.booking?.booking_id || '')
+              .toLowerCase()
+              .includes(s) ||
+            String(f.booking?.room?.room_number || '')
+              .toLowerCase()
+              .includes(s)
+          );
+        })
+      : feedbacks;
+
+    return res.json({ feedbacks: filtered });
+  } catch (error) {
+    next(error);
+  }
+};

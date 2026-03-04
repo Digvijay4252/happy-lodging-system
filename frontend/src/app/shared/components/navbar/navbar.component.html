@@ -1,7 +1,6 @@
 <nav class="navbar navbar-expand-lg nav-shell px-3">
   <a class="navbar-brand fw-bold" routerLink="/">Happy Lodging</a>
   <div class="ms-auto d-flex gap-2 align-items-center">
-    <a class="btn btn-sm btn-outline-secondary" routerLink="/chatbot" *ngIf="auth.isLoggedIn()">AI Chat</a>
     <a class="btn btn-sm btn-primary" routerLink="/auth/login/customer" *ngIf="!auth.isLoggedIn()">Login</a>
     <button class="btn btn-sm btn-outline-danger" *ngIf="auth.isLoggedIn()" (click)="logout()">Logout</button>
   </div>

@@ -19,5 +19,6 @@ router.post('/staff', registerValidation, authController.staffRegisterByAdmin);
 router.put('/staff/:id', adminController.updateStaff);
 router.delete('/staff/:id', adminController.deleteStaff);
 router.get('/reports', adminController.reports);
+router.get('/feedbacks', adminController.listFeedbacks);
 
 module.exports = router;
