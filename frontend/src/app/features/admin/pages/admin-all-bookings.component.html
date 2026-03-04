@@ -1,0 +1,25 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="section-title mb-0">All Bookings</h3>
+  <a class="btn btn-outline-secondary" routerLink="/admin">Back to Dashboard</a>
+</div>
+
+<div class="card surface-card p-3">
+  <div *ngFor="let b of bookings" class="list-row p-3 mb-2 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <img
+        *ngIf="b.room?.images?.length"
+        [src]="resolveImageUrl(b.room.images[0].image_url)"
+        alt="Room image"
+        class="room-thumb"
+      />
+      <div>{{ b.booking_id }} | {{ b.customer?.name }} | Room {{ b.room?.room_number }} | {{ b.status }} | {{ b.total_amount }}</div>
+    </div>
+    <select class="form-select w-auto" (change)="changeStatus(b.id, $any($event.target).value)">
+      <option>Booked</option>
+      <option>CheckedIn</option>
+      <option>CheckedOut</option>
+      <option>Cancelled</option>
+    </select>
+  </div>
+  <div class="muted" *ngIf="!bookings.length">No bookings found.</div>
+</div>

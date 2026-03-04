@@ -46,7 +46,7 @@ exports.getAllBookings = async (req, res, next) => {
     const bookings = await db.Booking.findAll({
       include: [
         { model: db.User, as: 'customer', attributes: ['id', 'name', 'email'] },
-        { model: db.Room, as: 'room' },
+        { model: db.Room, as: 'room', include: [{ model: db.RoomImage, as: 'images', attributes: ['id', 'image_url'] }] },
         { model: db.Payment, as: 'payments' },
       ],
       order: [['id', 'DESC']],
