@@ -1,9 +1,27 @@
 const db = require('../models');
 
+const findBookingByIdOrCode = async (identifier) => {
+  if (!identifier) return null;
+  const include = [{ model: db.Room, as: 'room' }];
+
+  const asNumber = Number(identifier);
+  if (!Number.isNaN(asNumber)) {
+    const byId = await db.Booking.findByPk(asNumber, { include });
+    if (byId) return byId;
+  }
+
+  return db.Booking.findOne({
+    where: { booking_id: String(identifier) },
+    include,
+  });
+};
+
 exports.checkIn = async (req, res, next) => {
   try {
-    const booking = await db.Booking.findByPk(req.params.id, { include: [{ model: db.Room, as: 'room' }] });
+    const booking = await findBookingByIdOrCode(req.params.id);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
+    if (booking.status === 'Cancelled') return res.status(400).json({ message: 'Cancelled booking cannot be checked in' });
+    if (booking.status === 'CheckedOut') return res.status(400).json({ message: 'Checked-out booking cannot be checked in' });
 
     await booking.update({ status: 'CheckedIn' });
     await booking.room.update({ status: 'Occupied' });
@@ -16,8 +34,9 @@ exports.checkIn = async (req, res, next) => {
 
 exports.checkOut = async (req, res, next) => {
   try {
-    const booking = await db.Booking.findByPk(req.params.id, { include: [{ model: db.Room, as: 'room' }] });
+    const booking = await findBookingByIdOrCode(req.params.id);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
+    if (booking.status === 'Cancelled') return res.status(400).json({ message: 'Cancelled booking cannot be checked out' });
 
     await booking.update({ status: 'CheckedOut' });
     await booking.room.update({ status: 'Available' });
@@ -74,6 +93,18 @@ exports.updateServiceTicket = async (req, res, next) => {
     if (!ticket) return res.status(404).json({ message: 'Service ticket not found' });
 
     const { status, assigned_staff_id } = req.body;
+    const allowedStatuses = ['Open', 'InProgress', 'Resolved', 'Closed'];
+    if (status && !allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid ticket status' });
+    }
+
+    if (assigned_staff_id) {
+      const staff = await db.User.findOne({ where: { id: assigned_staff_id, role: 'staff' } });
+      if (!staff) {
+        return res.status(400).json({ message: 'assigned_staff_id must be a valid staff user' });
+      }
+    }
+
     await ticket.update({
       status: status || ticket.status,
       assigned_staff_id: assigned_staff_id || ticket.assigned_staff_id,

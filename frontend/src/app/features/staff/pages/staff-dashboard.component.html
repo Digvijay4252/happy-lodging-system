@@ -1,46 +1,17 @@
 <h3 class="mb-3">Staff Dashboard</h3>
 <div class="row g-3">
-  <div class="col-lg-6">
-    <div class="card surface-card p-3 mb-3">
-      <h5>Booking Ops</h5>
-      <input class="form-control mb-2" type="number" placeholder="Booking ID" [formControl]="bookingId" />
-      <div class="d-flex gap-2">
-        <button class="btn btn-primary" (click)="checkIn()">Check-In</button>
-        <button class="btn btn-success" (click)="checkOut()">Check-Out</button>
-      </div>
-    </div>
-
-    <div class="card surface-card p-3">
-      <h5>Update Room Status</h5>
-      <form [formGroup]="roomForm" (ngSubmit)="updateRoom()">
-        <input class="form-control mb-2" type="number" placeholder="Room ID" formControlName="roomId" />
-        <select class="form-select mb-2" formControlName="status">
-          <option>Available</option>
-          <option>Occupied</option>
-          <option>Cleaning</option>
-          <option>Maintenance</option>
-        </select>
-        <button class="btn btn-dark">Update</button>
-      </form>
+  <div class="col-md-6">
+    <div class="card surface-card p-4 h-100">
+      <h5>Operations</h5>
+      <p class="muted mb-3">Check-in, check-out, and room status updates.</p>
+      <a class="btn btn-primary" routerLink="/staff/operations">Open Operations</a>
     </div>
   </div>
-
-  <div class="col-lg-6">
-    <div class="card surface-card p-3 mb-3">
-      <h5>Create Service Ticket</h5>
-      <form [formGroup]="ticketForm" (ngSubmit)="createTicket()">
-        <input class="form-control mb-2" type="number" placeholder="Booking ID" formControlName="booking_id" />
-        <textarea class="form-control mb-2" rows="3" placeholder="Description" formControlName="description"></textarea>
-        <button class="btn btn-warning">Create Ticket</button>
-      </form>
-    </div>
-
-    <div class="card surface-card p-3">
-      <h5>Tickets</h5>
-      <div *ngFor="let t of tickets" class="list-row p-3 mb-2">
-        #{{ t.id }} | Booking {{ t.booking_id }} | {{ t.status }}
-        <div>{{ t.description }}</div>
-      </div>
+  <div class="col-md-6">
+    <div class="card surface-card p-4 h-100">
+      <h5>Service Tickets</h5>
+      <p class="muted mb-3">Create tickets, update status, and assign staff.</p>
+      <a class="btn btn-warning" routerLink="/staff/tickets">Open Tickets</a>
     </div>
   </div>
 </div>

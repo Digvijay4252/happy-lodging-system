@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   standalone: true,
   selector: 'app-chatbot',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.scss',
 })
@@ -15,7 +17,14 @@ export class ChatbotComponent {
   messages: { role: string; text: string }[] = [];
   recommendations: any[] = [];
 
-  constructor(private hotel: HotelService) {}
+  constructor(private hotel: HotelService, private auth: AuthService) {}
+
+  get backRoute(): string {
+    const role = this.auth.getRole();
+    if (role === 'admin') return '/admin';
+    if (role === 'staff') return '/staff';
+    return '/customer';
+  }
 
   send() {
     if (!this.message.trim()) return;

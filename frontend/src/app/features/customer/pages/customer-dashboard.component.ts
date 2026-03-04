@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: true,
   selector: 'app-customer-dashboard',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './customer-dashboard.component.html',
   styleUrl: './customer-dashboard.component.scss',
 })
 export class CustomerDashboardComponent implements OnInit {
   rooms: any[] = [];
-  bookings: any[] = [];
 
   filters = this.fb.group({
     checkIn: [''],
@@ -25,17 +26,19 @@ export class CustomerDashboardComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private hotel: HotelService, private toast: ToastService) {}
 
+  resolveImageUrl(imageUrl: string): string {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    const base = environment.apiUrl.replace('/api', '');
+    return `${base}${imageUrl}`;
+  }
+
   ngOnInit() {
     this.loadRooms();
-    this.loadBookings();
   }
 
   loadRooms() {
     this.hotel.listRooms(this.filters.value).subscribe((res) => (this.rooms = res.rooms || []));
-  }
-
-  loadBookings() {
-    this.hotel.myBookings().subscribe((res) => (this.bookings = res.bookings || []));
   }
 
   book(roomId: number) {
@@ -50,29 +53,8 @@ export class CustomerDashboardComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Booking confirmed');
-          this.loadBookings();
         },
         error: (err) => this.toast.error(err.error?.message || 'Booking failed'),
       });
-  }
-
-  cancel(id: number) {
-    this.hotel.cancelBooking(id).subscribe({
-      next: () => {
-        this.toast.success('Booking cancelled');
-        this.loadBookings();
-      },
-      error: (err) => this.toast.error(err.error?.message || 'Cancel failed'),
-    });
-  }
-
-  pay(id: number) {
-    this.hotel.payBooking(id).subscribe({
-      next: () => {
-        this.toast.success('Payment processed');
-        this.loadBookings();
-      },
-      error: (err) => this.toast.error(err.error?.message || 'Payment failed'),
-    });
   }
 }
