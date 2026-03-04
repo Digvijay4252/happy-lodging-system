@@ -1,0 +1,84 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="section-title mb-0">Room Management</h3>
+  <a class="btn btn-outline-secondary" routerLink="/admin">Back to Dashboard</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card surface-card p-3">
+      <h5>{{ editingRoomId ? 'Edit Room' : 'Add Room' }}</h5>
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <input class="form-control mb-2" placeholder="Room Number" formControlName="room_number" />
+
+        <select class="form-select mb-2" formControlName="type">
+          <option>Single</option>
+          <option>Double</option>
+          <option>Deluxe</option>
+          <option>Suite</option>
+        </select>
+
+        <input class="form-control mb-2" type="number" min="1" placeholder="Price" formControlName="price" />
+
+        <select class="form-select mb-2" formControlName="status">
+          <option>Available</option>
+          <option>Occupied</option>
+          <option>Cleaning</option>
+          <option>Maintenance</option>
+        </select>
+
+        <textarea class="form-control mb-2" rows="3" placeholder="Description" formControlName="description"></textarea>
+        <input class="form-control mb-2" placeholder="Amenities (comma separated)" formControlName="amenitiesText" />
+
+        <div
+          class="dropzone mb-2"
+          [class.drag-over]="isDragOver"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()"
+        >
+          <input #fileInput type="file" class="d-none" accept="image/*" (change)="onFileSelected($event)" />
+          <div class="dropzone-text" *ngIf="!selectedImageFile">Drag & drop image here or click to browse</div>
+          <div class="dropzone-text" *ngIf="selectedImageFile">{{ selectedImageFile.name }}</div>
+        </div>
+        <div class="mb-3" *ngIf="imagePreviewUrl">
+          <img [src]="imagePreviewUrl" alt="Preview" class="img-preview mb-2" />
+          <div>
+            <button class="btn btn-sm btn-outline-danger" type="button" (click)="clearImageSelection()">Remove Image</button>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary w-100" [disabled]="form.invalid">{{ editingRoomId ? 'Update Room' : 'Create Room' }}</button>
+          <button class="btn btn-outline-dark" type="button" (click)="resetForm()">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card surface-card p-3">
+      <h5 class="mb-3">All Rooms</h5>
+      <div *ngFor="let room of rooms" class="room-row p-3 mb-2">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="fw-semibold">#{{ room.room_number }} - {{ room.type }}</div>
+            <div class="muted">Price: {{ room.price }} | Status: {{ room.status }}</div>
+            <div class="muted" *ngIf="room.description">{{ room.description }}</div>
+            <div class="muted" *ngIf="room.amenities?.length">Amenities: {{ room.amenities.join(', ') }}</div>
+            <div class="mt-1" *ngIf="room.images?.length">
+              <a *ngFor="let img of room.images; let i = index" [href]="img.image_url" target="_blank" class="me-2 small">
+                Image {{ i + 1 }}
+              </a>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" (click)="edit(room)">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" (click)="remove(room.id)">Delete</button>
+          </div>
+        </div>
+      </div>
+      <div class="muted" *ngIf="!rooms.length">No rooms found.</div>
+    </div>
+  </div>
+</div>

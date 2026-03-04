@@ -1,0 +1,46 @@
+<h3 class="section-title">Customer Dashboard</h3>
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card surface-card p-3 mb-3">
+      <h5>Search Rooms</h5>
+      <form [formGroup]="filters" (ngSubmit)="loadRooms()">
+        <input class="form-control mb-2" type="date" formControlName="checkIn" />
+        <input class="form-control mb-2" type="date" formControlName="checkOut" />
+        <select class="form-select mb-2" formControlName="type">
+          <option value="">Any Type</option>
+          <option>Single</option>
+          <option>Double</option>
+          <option>Deluxe</option>
+          <option>Suite</option>
+        </select>
+        <input class="form-control mb-2" placeholder="Min Price" formControlName="minPrice" />
+        <input class="form-control mb-2" placeholder="Max Price" formControlName="maxPrice" />
+        <button class="btn btn-primary w-100">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card surface-card p-3 mb-3">
+      <h5>Available Rooms</h5>
+      <div *ngFor="let room of rooms" class="list-row p-3 mb-2 d-flex justify-content-between align-items-center">
+        <div>
+          <strong>#{{ room.room_number }} - {{ room.type }}</strong>
+          <div class="muted">Price: {{ room.price }} / night</div>
+          <div class="muted">Status: {{ room.status }}</div>
+        </div>
+        <button class="btn btn-success" (click)="book(room.id)">Book</button>
+      </div>
+    </div>
+
+    <div class="card surface-card p-3">
+      <h5>Booking History</h5>
+      <div *ngFor="let b of bookings" class="list-row p-3 mb-2">
+        <div><strong>{{ b.booking_id }}</strong> - {{ b.status }} - Payment: {{ b.payment_status }}</div>
+        <div class="muted">Room {{ b.room?.room_number }} | {{ b.check_in }} to {{ b.check_out }} | {{ b.total_amount }}</div>
+        <button class="btn btn-sm btn-outline-danger me-2" (click)="cancel(b.id)">Cancel</button>
+        <button class="btn btn-sm btn-outline-success" (click)="pay(b.id)">Pay</button>
+      </div>
+    </div>
+  </div>
+</div>
