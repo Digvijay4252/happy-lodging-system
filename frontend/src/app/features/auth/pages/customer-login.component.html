@@ -1,0 +1,18 @@
+<div class="auth-shell">
+  <div class="auth-card surface-card">
+    <p class="auth-kicker mb-1">Welcome Back</p>
+    <h3 class="mb-2">Customer Login</h3>
+    <p class="muted mb-4">Access bookings, payments, and your room history.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <input class="form-control auth-input mb-3" placeholder="Email" formControlName="email" />
+      <input class="form-control auth-input mb-4" type="password" placeholder="Password" formControlName="password" />
+      <button class="btn btn-primary auth-btn w-100" [disabled]="form.invalid">Login as Customer</button>
+    </form>
+
+    <a routerLink="/auth/signup/customer" class="mt-4 d-block text-center">Create customer account</a>
+    <div class="text-center mt-2 small">
+      <a routerLink="/auth/login/staff">Staff login</a> | <a routerLink="/auth/login/admin">Admin login</a>
+    </div>
+  </div>
+</div>
