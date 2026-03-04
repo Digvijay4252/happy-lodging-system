@@ -1,0 +1,17 @@
+<div class="row justify-content-center">
+  <div class="col-lg-8 card surface-card p-3">
+    <h4>AI Hotel Assistant</h4>
+    <div class="chat-window p-3 mb-3">
+      <div *ngFor="let item of messages" class="mb-2">
+        <strong>{{ item.role }}:</strong> {{ item.text }}
+      </div>
+    </div>
+    <div class="input-group mb-3">
+      <input class="form-control" [(ngModel)]="message" placeholder="Ask about rooms, booking, amenities..." />
+      <button class="btn btn-primary" (click)="send()">Send</button>
+    </div>
+
+    <button class="btn btn-outline-dark" (click)="recommend()">Get Smart Room Recommendations</button>
+    <pre class="small mt-2">{{ recommendations | json }}</pre>
+  </div>
+</div>

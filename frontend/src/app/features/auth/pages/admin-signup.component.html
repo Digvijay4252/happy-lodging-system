@@ -1,0 +1,17 @@
+<div class="auth-shell">
+  <div class="auth-card surface-card">
+    <p class="auth-kicker mb-1">Admin Bootstrap</p>
+    <h3 class="mb-2">Admin Signup</h3>
+    <p class="muted mb-4">First admin can sign up directly. Later, login as admin or provide setup key.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <input class="form-control auth-input mb-3" placeholder="Full Name" formControlName="name" />
+      <input class="form-control auth-input mb-3" placeholder="Email" formControlName="email" />
+      <input class="form-control auth-input mb-3" type="password" placeholder="Password" formControlName="password" />
+      <input class="form-control auth-input mb-4" placeholder="Setup Key (optional if already logged in as admin)" formControlName="setup_key" />
+      <button class="btn btn-danger auth-btn w-100" [disabled]="form.invalid">Create Admin Account</button>
+    </form>
+
+    <a routerLink="/auth/login/admin" class="mt-4 d-block text-center">Back to admin login</a>
+  </div>
+</div>

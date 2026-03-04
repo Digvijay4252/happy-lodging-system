@@ -1,0 +1,27 @@
+.auth-shell {
+  min-height: calc(100vh - 130px);
+  display: grid;
+  place-items: center;
+}
+
+.auth-card {
+  width: min(92vw, 500px);
+  padding: 2rem;
+}
+
+.auth-kicker {
+  color: #55708f;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+
+.auth-input {
+  border: 1px solid #cfd9e8;
+  padding: 0.8rem 0.9rem;
+}
+
+.auth-btn {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
