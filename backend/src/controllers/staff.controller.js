@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const db = require('../models');
 
 const findBookingByIdOrCode = async (identifier) => {
@@ -120,13 +121,124 @@ exports.listServiceTickets = async (req, res, next) => {
   try {
     const tickets = await db.ServiceRequest.findAll({
       include: [
-        { model: db.Booking, as: 'booking' },
+        {
+          model: db.Booking,
+          as: 'booking',
+          include: [{ model: db.Room, as: 'room', attributes: ['id', 'room_number', 'type'] }],
+        },
         { model: db.User, as: 'assigned_staff', attributes: ['id', 'name', 'email'] },
       ],
       order: [['id', 'DESC']],
     });
 
     return res.json({ tickets });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.listBookings = async (req, res, next) => {
+  try {
+    const { q, status, checkInFrom, checkInTo } = req.query;
+    const where = {};
+
+    if (status) {
+      const statuses = String(status)
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      where.status = statuses.length > 1 ? { [Op.in]: statuses } : statuses[0];
+    }
+    if (checkInFrom || checkInTo) {
+      where.check_in = {};
+      if (checkInFrom) where.check_in[Op.gte] = checkInFrom;
+      if (checkInTo) where.check_in[Op.lte] = checkInTo;
+    }
+    if (q) {
+      const asNumber = Number(q);
+      where[Op.or] = [{ booking_id: { [Op.like]: `%${q}%` } }];
+      if (!Number.isNaN(asNumber)) {
+        where[Op.or].push({ id: asNumber }, { room_id: asNumber });
+      }
+    }
+
+    const bookings = await db.Booking.findAll({
+      where,
+      include: [
+        { model: db.Room, as: 'room', attributes: ['id', 'room_number', 'type', 'status'] },
+        { model: db.User, as: 'customer', attributes: ['id', 'name', 'email'] },
+      ],
+      order: [['id', 'DESC']],
+    });
+
+    return res.json({ bookings });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.listRooms = async (req, res, next) => {
+  try {
+    const { q, status } = req.query;
+    const where = {};
+
+    if (status) where.status = status;
+    if (q) {
+      where[Op.or] = [{ room_number: { [Op.like]: `%${q}%` } }, { type: { [Op.like]: `%${q}%` } }];
+    }
+
+    const rooms = await db.Room.findAll({
+      where,
+      order: [['room_number', 'ASC']],
+      attributes: ['id', 'room_number', 'type', 'status', 'price'],
+    });
+
+    return res.json({ rooms });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.listFeedbacks = async (req, res, next) => {
+  try {
+    const { q, sentiment } = req.query;
+    const where = {};
+    if (sentiment) where.sentiment = sentiment;
+
+    const feedbacks = await db.Feedback.findAll({
+      where,
+      include: [
+        {
+          model: db.Booking,
+          as: 'booking',
+          include: [{ model: db.Room, as: 'room', attributes: ['id', 'room_number', 'type'] }],
+        },
+        { model: db.User, as: 'customer', attributes: ['id', 'name', 'email'] },
+      ],
+      order: [['id', 'DESC']],
+    });
+
+    const filtered = q
+      ? feedbacks.filter((f) => {
+          const s = String(q).toLowerCase();
+          return (
+            String(f.comment || '')
+              .toLowerCase()
+              .includes(s) ||
+            String(f.customer?.name || '')
+              .toLowerCase()
+              .includes(s) ||
+            String(f.booking?.booking_id || '')
+              .toLowerCase()
+              .includes(s) ||
+            String(f.booking?.room?.room_number || '')
+              .toLowerCase()
+              .includes(s)
+          );
+        })
+      : feedbacks;
+
+    return res.json({ feedbacks: filtered });
   } catch (error) {
     next(error);
   }

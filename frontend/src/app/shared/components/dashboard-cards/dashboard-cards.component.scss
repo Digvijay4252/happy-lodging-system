@@ -2,6 +2,13 @@
   border: 0;
 }
 
-.stat-card h4 {
+.stat-card h3 {
   color: #143157;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.stat-card {
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }

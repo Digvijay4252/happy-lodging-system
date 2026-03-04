@@ -1,0 +1,30 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="section-title mb-0">Customer Feedback</h3>
+  <a class="btn btn-outline-secondary" routerLink="/staff">Back to Staff Home</a>
+</div>
+
+<div class="card surface-card p-3">
+  <form [formGroup]="filters" class="row g-2 mb-3">
+    <div class="col-md-4">
+      <input class="form-control" placeholder="Search comment/customer/booking/room" formControlName="q" />
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" formControlName="sentiment">
+        <option value="">All Sentiment</option>
+        <option value="positive">positive</option>
+        <option value="neutral">neutral</option>
+        <option value="negative">negative</option>
+      </select>
+    </div>
+  </form>
+
+  <div *ngFor="let f of feedbacks" class="list-row p-3 mb-2">
+    <div class="fw-semibold">
+      {{ f.customer?.name || '-' }} | Booking {{ f.booking?.booking_id || f.booking_id }} | Room #{{ f.booking?.room?.room_number || '-' }}
+    </div>
+    <div class="my-1">{{ f.comment }}</div>
+    <div class="small muted">Sentiment: {{ f.sentiment || 'pending' }}</div>
+  </div>
+  <div class="muted" *ngIf="!feedbacks.length">No feedback available.</div>
+</div>
+

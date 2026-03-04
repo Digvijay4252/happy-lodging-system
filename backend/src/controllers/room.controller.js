@@ -65,6 +65,26 @@ exports.getRoomById = async (req, res, next) => {
   }
 };
 
+exports.getRoomBookedDates = async (req, res, next) => {
+  try {
+    const room = await db.Room.findByPk(req.params.id);
+    if (!room) return res.status(404).json({ message: 'Room not found' });
+
+    const bookings = await db.Booking.findAll({
+      attributes: ['id', 'booking_id', 'check_in', 'check_out', 'status'],
+      where: {
+        room_id: room.id,
+        status: { [Op.in]: ['Booked', 'CheckedIn'] },
+      },
+      order: [['check_in', 'ASC']],
+    });
+
+    return res.json({ room_id: room.id, booked_ranges: bookings });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.createRoom = async (req, res, next) => {
   try {
     validate(req);

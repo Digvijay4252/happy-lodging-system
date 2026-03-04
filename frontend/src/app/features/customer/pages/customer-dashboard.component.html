@@ -1,12 +1,16 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h3 class="section-title mb-0">Room Booking</h3>
-  <a class="btn btn-outline-secondary" routerLink="/customer/bookings">My Bookings</a>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" routerLink="/customer/feedback">My Feedback</a>
+    <a class="btn btn-outline-secondary" routerLink="/customer/issues">My Issues</a>
+    <a class="btn btn-outline-secondary" routerLink="/customer/bookings">My Bookings</a>
+  </div>
 </div>
 <div class="row g-3">
   <div class="col-lg-4">
     <div class="card surface-card p-3 mb-3">
       <h5>Search Rooms</h5>
-      <form [formGroup]="filters" (ngSubmit)="loadRooms()">
+      <form [formGroup]="filters">
         <input class="form-control mb-2" type="date" formControlName="checkIn" />
         <input class="form-control mb-2" type="date" formControlName="checkOut" />
         <select class="form-select mb-2" formControlName="type">
@@ -18,7 +22,6 @@
         </select>
         <input class="form-control mb-2" placeholder="Min Price" formControlName="minPrice" />
         <input class="form-control mb-2" placeholder="Max Price" formControlName="maxPrice" />
-        <button class="btn btn-primary w-100">Search</button>
       </form>
     </div>
   </div>
@@ -38,8 +41,17 @@
           <div class="muted">Price: {{ room.price }} / night</div>
           <div class="muted">Status: {{ room.status }}</div>
         </div>
-        <button class="btn btn-success" (click)="book(room.id)">Book</button>
+        <button class="btn btn-success" (click)="openBookingModal(room)">Book</button>
       </div>
     </div>
   </div>
 </div>
+
+<app-booking-popup
+  [open]="showBookingModal"
+  [room]="selectedRoom"
+  [defaultCheckIn]="filters.value.checkIn || ''"
+  [defaultCheckOut]="filters.value.checkOut || ''"
+  (closed)="closeBookingModal()"
+  (bookingConfirmed)="loadRooms()"
+></app-booking-popup>

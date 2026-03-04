@@ -8,8 +8,11 @@ const { createBookingValidation } = require('../validators/common.validator');
 
 router.post('/', authMiddleware, roleMiddleware('customer'), createBookingValidation, bookingController.createBooking);
 router.get('/me', authMiddleware, roleMiddleware('customer'), bookingController.getMyBookings);
+router.post('/issues', authMiddleware, roleMiddleware('customer'), bookingController.createIssue);
+router.get('/issues/me', authMiddleware, roleMiddleware('customer'), bookingController.getMyIssues);
 router.patch('/:id/cancel', authMiddleware, roleMiddleware('customer'), bookingController.cancelBooking);
 router.post('/:id/pay', authMiddleware, roleMiddleware('customer'), bookingController.simulatePayment);
 router.post('/feedback', authMiddleware, roleMiddleware('customer'), bookingController.createFeedback);
+router.get('/feedback/me', authMiddleware, roleMiddleware('customer'), bookingController.getMyFeedback);
 
 module.exports = router;

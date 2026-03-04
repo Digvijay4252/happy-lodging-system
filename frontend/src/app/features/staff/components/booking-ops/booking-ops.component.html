@@ -1,0 +1,115 @@
+<div class="card surface-card p-3">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+    <div>
+      <h5 class="mb-0">Booking Ops</h5>
+      <div class="small muted">Track booking lifecycle and run check-in/check-out actions quickly.</div>
+    </div>
+    <span class="count-pill">Total: {{ bookingStats.total }}</span>
+  </div>
+
+  <div class="view-toolbar mb-3">
+    <div class="btn-group" role="group" aria-label="view mode">
+      <button class="btn btn-outline-primary" [class.active]="viewMode === 'tiles'" (click)="setViewMode('tiles')" type="button">
+        Tiles View
+      </button>
+      <button class="btn btn-outline-primary" [class.active]="viewMode === 'table'" (click)="setViewMode('table')" type="button">
+        Table View
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row mb-3">
+    <div class="stat-chip">Booked: <strong>{{ bookingStats.booked }}</strong></div>
+    <div class="stat-chip">Checked-In: <strong>{{ bookingStats.checkedIn }}</strong></div>
+    <div class="stat-chip">Checked-Out: <strong>{{ bookingStats.checkedOut }}</strong></div>
+    <div class="stat-chip">Cancelled: <strong>{{ bookingStats.cancelled }}</strong></div>
+  </div>
+
+  <form [formGroup]="filters" class="row g-2 mb-2">
+    <div class="col-md-4">
+      <input class="form-control" placeholder="Search booking id/code/customer" formControlName="q" />
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" formControlName="status">
+        <option value="">All Status</option>
+        <option>Booked</option>
+        <option>CheckedIn</option>
+        <option>CheckedOut</option>
+        <option>Cancelled</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input class="form-control" type="date" formControlName="checkInFrom" />
+    </div>
+    <div class="col-md-2">
+      <input class="form-control" type="date" formControlName="checkInTo" />
+    </div>
+  </form>
+
+  <div class="tile-wrap" *ngIf="viewMode === 'tiles'">
+    <div class="booking-tile" *ngFor="let b of bookings" [class.active-tile]="selectedBooking?.id === b.id">
+      <div class="tile-head">
+        <div class="fw-semibold">{{ b.booking_id }}</div>
+        <button class="btn btn-outline-secondary btn-sm action-btn" (click)="useBooking(b)">Use</button>
+      </div>
+      <div class="muted small mb-2">ID: #{{ b.id }}</div>
+      <div class="tile-meta"><span>Customer</span><strong>{{ b.customer?.name || '-' }}</strong></div>
+      <div class="tile-meta"><span>Room</span><strong>#{{ b.room?.room_number || '-' }} - {{ b.room?.type || '-' }}</strong></div>
+      <div class="tile-meta"><span>Status</span><span class="status-pill" [ngClass]="statusClass(b.status)">{{ b.status }}</span></div>
+      <div class="tile-dates">{{ b.check_in }} to {{ b.check_out }}</div>
+    </div>
+  </div>
+
+  <div class="muted small mt-2" *ngIf="!bookings.length">No bookings found.</div>
+
+  <div class="table-wrap mt-3" *ngIf="viewMode === 'table'">
+    <table class="table table-sm align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Booking</th>
+          <th>Customer</th>
+          <th>Room</th>
+          <th>Status</th>
+          <th>Dates</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of bookings" [class.active-row]="selectedBooking?.id === b.id">
+          <td>{{ b.booking_id }} <span class="muted">(#{{ b.id }})</span></td>
+          <td>{{ b.customer?.name || '-' }}</td>
+          <td>#{{ b.room?.room_number || '-' }} - {{ b.room?.type || '-' }}</td>
+          <td><span class="status-pill" [ngClass]="statusClass(b.status)">{{ b.status }}</span></td>
+          <td>{{ b.check_in }} to {{ b.check_out }}</td>
+          <td><button class="btn btn-outline-secondary btn-sm action-btn" (click)="useBooking(b)">Use</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="selectedBooking" class="selected-box mt-3">
+    <div><strong>Selected:</strong> {{ selectedBooking.booking_id }} ({{ selectedBooking.status }})</div>
+    <div><strong>Customer:</strong> {{ selectedBooking.customer?.name || '-' }} | {{ selectedBooking.customer?.email || '-' }}</div>
+    <div><strong>Room:</strong> #{{ selectedBooking.room?.room_number || '-' }} - {{ selectedBooking.room?.type || '-' }}</div>
+  </div>
+</div>
+
+<div *ngIf="showActionModal && selectedBooking" class="ops-modal-backdrop" (click)="closeModal()">
+  <div class="ops-modal card p-4" (click)="$event.stopPropagation()">
+    <h4 class="mb-3 modal-title">Booking Action</h4>
+
+    <div class="summary-box mb-3">
+      <div><strong>Booking:</strong> {{ selectedBooking.booking_id }} <span class="muted">(#{{ selectedBooking.id }})</span></div>
+      <div><strong>Customer:</strong> {{ selectedBooking.customer?.name || '-' }} ({{ selectedBooking.customer?.email || '-' }})</div>
+      <div><strong>Room:</strong> #{{ selectedBooking.room?.room_number || '-' }} - {{ selectedBooking.room?.type || '-' }}</div>
+      <div><strong>Status:</strong> {{ selectedBooking.status }}</div>
+      <div><strong>Dates:</strong> {{ selectedBooking.check_in }} to {{ selectedBooking.check_out }}</div>
+    </div>
+
+    <div class="d-flex gap-2 mt-2 justify-content-end">
+      <button class="btn btn-outline-secondary" type="button" (click)="closeModal()">Close</button>
+      <button class="btn btn-primary" type="button" (click)="checkIn()">Check-In</button>
+      <button class="btn btn-success" type="button" (click)="checkOut()">Check-Out</button>
+    </div>
+  </div>
+</div>

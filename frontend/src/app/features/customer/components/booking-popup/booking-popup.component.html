@@ -1,0 +1,65 @@
+<div *ngIf="open" class="booking-modal-backdrop" (click)="close()">
+  <div class="booking-modal card p-4" (click)="$event.stopPropagation()">
+    <h5 class="mb-3">Confirm Booking</h5>
+
+    <div *ngIf="currentRoom; else noRoomBlock" class="d-flex gap-3 align-items-start mb-3">
+      <img
+        *ngIf="currentRoom.images?.length"
+        [src]="resolveImageUrl(currentRoom.images[0].image_url)"
+        alt="Room image"
+        class="room-thumb"
+      />
+      <div>
+        <div><strong>Room:</strong> #{{ currentRoom.room_number }} - {{ currentRoom.type }}</div>
+        <div><strong>Price:</strong> {{ currentRoom.price }} / night</div>
+        <div><strong>Status:</strong> {{ currentRoom.status }}</div>
+        <div><strong>Description:</strong> {{ currentRoom.description || 'N/A' }}</div>
+      </div>
+    </div>
+    <ng-template #noRoomBlock>
+      <div class="alert alert-warning py-2 mb-3">No room available for selected type/dates. Change type or dates.</div>
+    </ng-template>
+
+    <div class="row g-2 mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Type</label>
+        <select class="form-select" [(ngModel)]="selectedType" (change)="onTypeChange()">
+          <option value="" disabled>Select type</option>
+          <option *ngFor="let t of roomTypes" [value]="t">{{ t }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Start Date</label>
+        <input class="form-control" type="date" [(ngModel)]="checkIn" [min]="minCheckIn" (change)="onCheckInChange()" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Date</label>
+        <input class="form-control" type="date" [(ngModel)]="checkOut" [min]="minCheckOut" (change)="onCheckOutChange()" />
+      </div>
+    </div>
+
+    <div class="summary-box mb-3">
+      <div><strong>Nights:</strong> {{ nights }}</div>
+      <div><strong>Total:</strong> {{ totalAmount | number: '1.2-2' }}</div>
+      <div class="text-danger mt-1" *ngIf="hasDateConflict">Selected date range is already booked.</div>
+      <div class="small muted mt-2" *ngIf="bookedRanges.length">
+        Already booked ranges:
+        <span *ngFor="let range of bookedRanges; let last = last">
+          {{ range.check_in }} to {{ range.check_out }}<span *ngIf="!last">, </span>
+        </span>
+      </div>
+      <div class="small muted mt-2" *ngIf="loading">Loading booked dates...</div>
+    </div>
+
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn btn-outline-secondary" (click)="close()">Cancel</button>
+      <button
+        class="btn btn-success"
+        [disabled]="submitting || !currentRoom || !checkIn || !checkOut || nights <= 0 || hasDateConflict"
+        (click)="confirmBooking()"
+      >
+        {{ submitting ? 'Booking...' : 'Confirm Booking' }}
+      </button>
+    </div>
+  </div>
+</div>

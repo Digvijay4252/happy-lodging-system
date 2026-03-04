@@ -170,3 +170,74 @@ exports.createFeedback = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getMyFeedback = async (req, res, next) => {
+  try {
+    const feedbacks = await db.Feedback.findAll({
+      where: { user_id: req.user.id },
+      include: [
+        {
+          model: db.Booking,
+          as: 'booking',
+          include: [{ model: db.Room, as: 'room', attributes: ['id', 'room_number', 'type'] }],
+        },
+      ],
+      order: [['id', 'DESC']],
+    });
+
+    return res.json({ feedbacks });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.createIssue = async (req, res, next) => {
+  try {
+    const { booking_id, description } = req.body;
+    if (!booking_id || !description) {
+      return res.status(400).json({ message: 'booking_id and description are required' });
+    }
+
+    const booking = await db.Booking.findOne({
+      where: {
+        id: booking_id,
+        user_id: req.user.id,
+      },
+    });
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found for current customer' });
+    }
+
+    const issue = await db.ServiceRequest.create({
+      booking_id,
+      description,
+      status: 'Open',
+      assigned_staff_id: null,
+    });
+
+    return res.status(201).json({ message: 'Issue submitted successfully', issue });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getMyIssues = async (req, res, next) => {
+  try {
+    const issues = await db.ServiceRequest.findAll({
+      include: [
+        {
+          model: db.Booking,
+          as: 'booking',
+          where: { user_id: req.user.id },
+          include: [{ model: db.Room, as: 'room', attributes: ['id', 'room_number', 'type'] }],
+        },
+        { model: db.User, as: 'assigned_staff', attributes: ['id', 'name', 'email'] },
+      ],
+      order: [['id', 'DESC']],
+    });
+
+    return res.json({ issues });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -2,6 +2,20 @@
   border: 0;
 }
 
+.table-wrap {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.8rem;
+  overflow: auto;
+  max-height: 420px;
+  background: #fff;
+}
+
+.tile-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+}
+
 .list-row {
   border: 1px solid #d5dfeb;
   border-radius: 0.8rem;
@@ -14,4 +28,111 @@
   object-fit: cover;
   border: 1px solid #d5dfeb;
   border-radius: 0.45rem;
+}
+
+.muted {
+  color: #607086;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.status-booked {
+  color: #8a6116;
+  background: #fff6e6;
+  border-color: #ffe0a6;
+}
+
+.status-in {
+  color: #155e2d;
+  background: #eaf9ef;
+  border-color: #b6e8c5;
+}
+
+.status-out {
+  color: #1e3a8a;
+  background: #ecf2ff;
+  border-color: #c6d7ff;
+}
+
+.status-cancelled {
+  color: #991b1b;
+  background: #feecec;
+  border-color: #f7c4c4;
+}
+
+.ops-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1060;
+  padding: 1rem;
+}
+
+.ops-modal {
+  width: 100%;
+  max-width: 760px;
+  border: 0;
+  border-radius: 1.15rem;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.28);
+}
+
+.summary-box {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.8rem;
+  padding: 1rem;
+  background: #f8fbff;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.popup-title {
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.popup-top {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.popup-room-thumb {
+  width: 160px;
+  height: 110px;
+  object-fit: cover;
+  border: 1px solid #d5dfeb;
+  border-radius: 0.7rem;
+}
+
+.popup-room-info {
+  display: grid;
+  gap: 0.25rem;
+}
+
+@media (max-width: 767.98px) {
+  .popup-title {
+    font-size: 1.6rem;
+  }
+
+  .popup-top {
+    grid-template-columns: 1fr;
+  }
+
+  .popup-room-thumb {
+    width: 100%;
+    height: 170px;
+  }
 }
