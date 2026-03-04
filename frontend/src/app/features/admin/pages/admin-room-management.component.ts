@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -29,6 +30,13 @@ export class AdminRoomManagementComponent implements OnInit {
   });
 
   constructor(private fb: FormBuilder, private hotel: HotelService, private toast: ToastService) {}
+
+  resolveImageUrl(imageUrl: string): string {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    const base = environment.apiUrl.replace('/api', '');
+    return `${base}${imageUrl}`;
+  }
 
   ngOnInit() {
     this.loadRooms();

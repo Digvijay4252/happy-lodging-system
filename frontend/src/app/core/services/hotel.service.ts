@@ -76,11 +76,11 @@ export class HotelService {
     return this.http.patch(`${this.base}/staff/rooms/${id}/status`, { status });
   }
 
-  checkIn(id: number) {
+  checkIn(id: number | string) {
     return this.http.patch(`${this.base}/staff/bookings/${id}/check-in`, {});
   }
 
-  checkOut(id: number) {
+  checkOut(id: number | string) {
     return this.http.patch(`${this.base}/staff/bookings/${id}/check-out`, {});
   }
 
@@ -90,6 +90,10 @@ export class HotelService {
 
   createTicket(payload: any) {
     return this.http.post(`${this.base}/staff/tickets`, payload);
+  }
+
+  updateTicket(id: number, payload: { status?: string; assigned_staff_id?: number }) {
+    return this.http.patch(`${this.base}/staff/tickets/${id}`, payload);
   }
 
   aiRecommendations(budget?: number) {

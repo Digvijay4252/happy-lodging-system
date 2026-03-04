@@ -35,20 +35,52 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    const token = this.getToken();
+    if (!token) return false;
+    const payload = this.decodeTokenPayload(token);
+    if (!payload?.exp) return true;
+    const now = Math.floor(Date.now() / 1000);
+    return payload.exp > now;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   getUser(): any | null {
     const raw = localStorage.getItem('user');
-    if (!raw) return null;
+    if (!raw) {
+      const payload = this.decodeTokenPayload(this.getToken());
+      if (!payload) return null;
+      return { id: payload.id, role: payload.role };
+    }
     try {
       return JSON.parse(raw);
     } catch {
-      return null;
+      const payload = this.decodeTokenPayload(this.getToken());
+      if (!payload) return null;
+      return { id: payload.id, role: payload.role };
     }
   }
 
   getRole(): string | null {
-    return this.getUser()?.role || null;
+    return this.getUser()?.role || this.decodeTokenPayload(this.getToken())?.role || null;
+  }
+
+  private decodeTokenPayload(token: string | null): any | null {
+    if (!token) return null;
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return null;
+      let payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const padding = payload.length % 4;
+      if (padding) {
+        payload += '='.repeat(4 - padding);
+      }
+      const decoded = atob(payload);
+      return JSON.parse(decoded);
+    } catch {
+      return null;
+    }
   }
 }

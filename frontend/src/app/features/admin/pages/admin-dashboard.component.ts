@@ -13,7 +13,6 @@ import { HotelService } from '../../../core/services/hotel.service';
 })
 export class AdminDashboardComponent implements OnInit {
   cards: any[] = [];
-  bookings: any[] = [];
   reports: any = {};
 
   constructor(private hotel: HotelService) {}
@@ -28,11 +27,6 @@ export class AdminDashboardComponent implements OnInit {
       ];
     });
 
-    this.hotel.adminBookings().subscribe((res) => (this.bookings = res.bookings || []));
     this.hotel.adminReports().subscribe((res) => (this.reports = res));
-  }
-
-  changeStatus(id: number, status: string) {
-    this.hotel.updateBookingStatus(id, status).subscribe();
   }
 }
