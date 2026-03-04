@@ -24,10 +24,10 @@ export const authRoutes: Routes = [
   { path: 'auth/register', redirectTo: 'auth/signup/customer', pathMatch: 'full' },
   { path: 'register', redirectTo: 'auth/signup/customer', pathMatch: 'full' },
 
-  { path: 'auth/login/customer', component: CustomerLoginComponent },
-  { path: 'auth/login/staff', component: StaffLoginComponent },
-  { path: 'auth/login/admin', component: AdminLoginComponent },
-  { path: 'auth/signup/admin', component: AdminSignupComponent },
-  { path: 'auth/signup/customer', component: CustomerSignupComponent },
-  { path: 'auth/signup/staff', component: StaffSignupComponent },
+  { path: 'auth/login/customer', component: CustomerLoginComponent, title: 'Customer Login | Happy Lodging' },
+  { path: 'auth/login/staff', component: StaffLoginComponent, title: 'Staff Login | Happy Lodging' },
+  { path: 'auth/login/admin', component: AdminLoginComponent, title: 'Admin Login | Happy Lodging' },
+  { path: 'auth/signup/admin', component: AdminSignupComponent, title: 'Admin Signup | Happy Lodging' },
+  { path: 'auth/signup/customer', component: CustomerSignupComponent, title: 'Customer Signup | Happy Lodging' },
+  { path: 'auth/signup/staff', component: StaffSignupComponent, title: 'Staff Signup | Happy Lodging' },
 ];

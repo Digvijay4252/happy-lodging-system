@@ -1,0 +1,77 @@
+<div class="card surface-card p-3">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+    <h5 class="mb-0">Update Room Status</h5>
+    <div class="btn-group" role="group" aria-label="view mode">
+      <button class="btn btn-outline-primary btn-sm" [class.active]="viewMode === 'tiles'" (click)="setViewMode('tiles')" type="button">
+        Tiles View
+      </button>
+      <button class="btn btn-outline-primary btn-sm" [class.active]="viewMode === 'table'" (click)="setViewMode('table')" type="button">
+        Table View
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="filters" class="row g-2 mb-2">
+    <div class="col-md-6">
+      <input class="form-control" placeholder="Filter by room no/type" formControlName="q" />
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" formControlName="status">
+        <option value="">All Status</option>
+        <option>Available</option>
+        <option>Occupied</option>
+        <option>Cleaning</option>
+        <option>Maintenance</option>
+      </select>
+    </div>
+  </form>
+
+  <div class="tile-wrap mt-3" *ngIf="viewMode === 'tiles'">
+    <div class="room-tile" *ngFor="let room of rooms" [class.active-tile]="selectedRoom?.id === room.id">
+      <div class="tile-head">
+        <div class="fw-semibold">#{{ room.room_number }}</div>
+        <button class="btn btn-outline-secondary btn-sm action-btn" type="button" (click)="useRoom(room)">Use</button>
+      </div>
+      <div class="tile-meta"><span>ID</span><strong>{{ room.id }}</strong></div>
+      <div class="tile-meta"><span>Type</span><strong>{{ room.type }}</strong></div>
+      <div class="tile-meta"><span>Status</span><span class="status-pill" [ngClass]="statusClass(room.status)">{{ room.status }}</span></div>
+      <div class="tile-meta"><span>Price</span><strong>{{ room.price }}</strong></div>
+    </div>
+  </div>
+
+  <div class="table-wrap mt-3" *ngIf="viewMode === 'table'">
+    <table class="table table-sm align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Room No</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Price</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let room of rooms" [class.active-row]="selectedRoom?.id === room.id">
+          <td>{{ room.id }}</td>
+          <td>#{{ room.room_number }}</td>
+          <td>{{ room.type }}</td>
+          <td><span class="status-pill" [ngClass]="statusClass(room.status)">{{ room.status }}</span></td>
+          <td>{{ room.price }}</td>
+          <td><button class="btn btn-outline-secondary btn-sm action-btn" type="button" (click)="useRoom(room)">Use</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="muted small mt-2" *ngIf="!rooms.length">No rooms found.</div>
+</div>
+
+<app-room-status-popup
+  [open]="showUpdateModal"
+  [room]="selectedRoom"
+  [status]="selectedRoomStatus"
+  [saving]="saving"
+  (closed)="closeModal()"
+  (saved)="updateRoom($event)"
+></app-room-status-popup>

@@ -1,0 +1,85 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="section-title mb-0">Customer Issues</h3>
+  <a class="btn btn-outline-secondary" routerLink="/admin">Back to Dashboard</a>
+</div>
+
+<div class="card surface-card p-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h5 class="mb-0">All Service Issues</h5>
+    <div class="btn-group" role="group" aria-label="view mode">
+      <button class="btn btn-outline-primary btn-sm" [class.active]="viewMode === 'tiles'" (click)="setViewMode('tiles')" type="button">
+        Tiles View
+      </button>
+      <button class="btn btn-outline-primary btn-sm" [class.active]="viewMode === 'table'" (click)="setViewMode('table')" type="button">
+        Table View
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="filters" class="row g-2 mb-3">
+    <div class="col-md-4">
+      <input class="form-control" placeholder="Search id/booking/desc/staff" formControlName="q" />
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" formControlName="status">
+        <option value="">All Status</option>
+        <option>Open</option>
+        <option>InProgress</option>
+        <option>Resolved</option>
+        <option>Closed</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input class="form-control" type="date" formControlName="from" />
+    </div>
+    <div class="col-md-2">
+      <input class="form-control" type="date" formControlName="to" />
+    </div>
+  </form>
+
+  <div *ngIf="viewMode === 'tiles'">
+    <div *ngFor="let t of filteredTickets" class="list-row p-3 mb-2">
+      <div class="fw-semibold">Issue #{{ t.id }} | Booking {{ t.booking_id }} | Room #{{ t.booking?.room?.room_number || '-' }}</div>
+      <div class="muted mb-1">{{ t.description }}</div>
+      <div class="small mb-2">Assigned: {{ t.assigned_staff?.name || 'Unassigned' }}</div>
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="status-pill" [ngClass]="statusClass(t.status)">{{ t.status }}</span>
+        <button class="btn btn-sm btn-primary" type="button" (click)="openTicketPopup(t)">Open</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap" *ngIf="viewMode === 'table'">
+    <table class="table table-sm align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Issue</th>
+          <th>Booking/Room</th>
+          <th>Description</th>
+          <th>Assigned</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of filteredTickets">
+          <td>#{{ t.id }}</td>
+          <td>{{ t.booking_id }} / #{{ t.booking?.room?.room_number || '-' }}</td>
+          <td>{{ t.description }}</td>
+          <td>{{ t.assigned_staff?.name || 'Unassigned' }}</td>
+          <td><span class="status-pill" [ngClass]="statusClass(t.status)">{{ t.status }}</span></td>
+          <td><button class="btn btn-sm btn-outline-secondary" type="button" (click)="openTicketPopup(t)">Open</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="muted" *ngIf="!filteredTickets.length">No issues found.</div>
+</div>
+
+<app-ticket-update-popup
+  [open]="showTicketPopup"
+  [ticket]="selectedTicket"
+  [saving]="saving"
+  (closed)="closeTicketPopup()"
+  (saved)="updateTicket(selectedTicket.id, $event.status, $event.assigned_staff_id)"
+></app-ticket-update-popup>

@@ -1,0 +1,55 @@
+.card {
+  border: 0;
+}
+
+.list-row {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.8rem;
+  background: #fbfcff;
+}
+
+.muted {
+  color: #607086;
+}
+
+.table-wrap {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.8rem;
+  overflow: auto;
+  max-height: 420px;
+  background: #fff;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.status-open {
+  color: #1e3a8a;
+  background: #ecf2ff;
+  border-color: #c6d7ff;
+}
+
+.status-progress {
+  color: #8a6116;
+  background: #fff6e6;
+  border-color: #ffe0a6;
+}
+
+.status-resolved {
+  color: #155e2d;
+  background: #eaf9ef;
+  border-color: #b6e8c5;
+}
+
+.status-closed {
+  color: #374151;
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}

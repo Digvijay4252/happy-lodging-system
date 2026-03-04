@@ -6,6 +6,7 @@ export const chatbotRoutes: Routes = [
   {
     path: 'chatbot',
     component: ChatbotComponent,
+    title: 'Chatbot | Happy Lodging',
     canActivate: [authGuard],
   },
 ];

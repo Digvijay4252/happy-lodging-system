@@ -1,0 +1,76 @@
+.card {
+  border: 0;
+}
+
+.list-row {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.8rem;
+  background: #fbfcff;
+}
+
+.muted {
+  color: #607086;
+}
+
+.table-wrap {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.8rem;
+  overflow: auto;
+  max-height: 420px;
+  background: #fff;
+}
+
+.sent-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.sent-positive {
+  color: #155e2d;
+  background: #eaf9ef;
+  border-color: #b6e8c5;
+}
+
+.sent-neutral {
+  color: #334155;
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.sent-negative {
+  color: #991b1b;
+  background: #feecec;
+  border-color: #f7c4c4;
+}
+
+.ops-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1060;
+  padding: 1rem;
+}
+
+.ops-modal {
+  width: 100%;
+  max-width: 720px;
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.28);
+}
+
+.summary-box {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.8rem;
+  padding: 0.9rem;
+  background: #f8fbff;
+}
