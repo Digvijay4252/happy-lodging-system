@@ -23,13 +23,15 @@
   <div class="col-lg-7">
     <div class="card surface-card p-3">
       <h5>My Submitted Issues</h5>
-      <div *ngFor="let i of issues" class="list-row p-3 mb-2">
-        <div class="fw-semibold">Issue #{{ i.id }} | Booking {{ i.booking?.booking_id || i.booking_id }}</div>
-        <div class="muted">Room #{{ i.booking?.room?.room_number || '-' }} - {{ i.booking?.room?.type || '-' }}</div>
-        <div class="my-1">{{ i.description }}</div>
-        <div class="small">Status: <strong>{{ i.status }}</strong> | Assigned: {{ i.assigned_staff?.name || 'Pending' }}</div>
+      <div class="issues-scroll">
+        <div *ngFor="let i of issues" class="list-row p-3 mb-2">
+          <div class="fw-semibold">Issue #{{ i.id }} | Booking {{ i.booking?.booking_id || i.booking_id }}</div>
+          <div class="muted">Room #{{ i.booking?.room?.room_number || '-' }} - {{ i.booking?.room?.type || '-' }}</div>
+          <div class="my-1">{{ i.description }}</div>
+          <div class="small">Status: <strong>{{ i.status }}</strong> | Assigned: {{ i.assigned_staff?.name || 'Pending' }}</div>
+        </div>
+        <div class="muted" *ngIf="!issues.length">No issues submitted.</div>
       </div>
-      <div class="muted" *ngIf="!issues.length">No issues submitted.</div>
     </div>
   </div>
 </div>

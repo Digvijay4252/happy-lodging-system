@@ -17,11 +17,24 @@ import { environment } from '../../../../environments/environment';
 export class AdminRoomManagementComponent implements OnInit {
   rooms: any[] = [];
   editingRoomId: number | null = null;
+  showEditModal = false;
   selectedImageFile: File | null = null;
   imagePreviewUrl: string | null = null;
   isDragOver = false;
+  editSelectedImageFile: File | null = null;
+  editImagePreviewUrl: string | null = null;
+  editDragOver = false;
 
   form = this.fb.group({
+    room_number: ['', Validators.required],
+    type: ['Single', Validators.required],
+    price: [1000, [Validators.required, Validators.min(1)]],
+    status: ['Available', Validators.required],
+    description: [''],
+    amenitiesText: [''],
+  });
+
+  editForm = this.fb.group({
     room_number: ['', Validators.required],
     type: ['Single', Validators.required],
     price: [1000, [Validators.required, Validators.min(1)]],
@@ -57,7 +70,7 @@ export class AdminRoomManagementComponent implements OnInit {
 
   edit(room: any) {
     this.editingRoomId = room.id;
-    this.form.patchValue({
+    this.editForm.patchValue({
       room_number: room.room_number,
       type: room.type,
       price: Number(room.price),
@@ -65,11 +78,16 @@ export class AdminRoomManagementComponent implements OnInit {
       description: room.description || '',
       amenitiesText: Array.isArray(room.amenities) ? room.amenities.join(', ') : '',
     });
-    this.clearImageSelection();
+    this.editSelectedImageFile = null;
+    this.editImagePreviewUrl = null;
+    this.editDragOver = false;
+    if (room.images?.length) {
+      this.editImagePreviewUrl = this.resolveImageUrl(room.images[0].image_url);
+    }
+    this.showEditModal = true;
   }
 
   resetForm() {
-    this.editingRoomId = null;
     this.form.reset({
       room_number: '',
       type: 'Single',
@@ -95,17 +113,6 @@ export class AdminRoomManagementComponent implements OnInit {
         .map((a: string) => a.trim())
         .filter(Boolean),
     };
-
-    if (this.editingRoomId) {
-      this.hotel.updateRoom(this.editingRoomId, payload).subscribe({
-        next: () => {
-          this.toast.success('Room updated');
-          this.attachImageIfNeeded(this.editingRoomId as number);
-        },
-        error: (err) => this.toast.error(err.error?.message || 'Room update failed'),
-      });
-      return;
-    }
 
     this.hotel.createRoom(payload).subscribe({
       next: (res) => {
@@ -140,6 +147,47 @@ export class AdminRoomManagementComponent implements OnInit {
         this.resetForm();
         this.loadRooms();
       },
+    });
+  }
+
+  saveEditedRoom() {
+    if (!this.editingRoomId) return;
+    if (this.editForm.invalid) {
+      this.toast.error('Please fill required fields correctly');
+      return;
+    }
+
+    const { amenitiesText, ...rest } = this.editForm.value;
+    const payload = {
+      ...rest,
+      amenities: (amenitiesText || '')
+        .split(',')
+        .map((a: string) => a.trim())
+        .filter(Boolean),
+    };
+
+    this.hotel.updateRoom(this.editingRoomId, payload).subscribe({
+      next: () => {
+        if (!this.editSelectedImageFile) {
+          this.toast.success('Room updated');
+          this.closeEditModal();
+          this.loadRooms();
+          return;
+        }
+        this.hotel.addRoomImageFile(this.editingRoomId as number, this.editSelectedImageFile).subscribe({
+          next: () => {
+            this.toast.success('Room updated');
+            this.closeEditModal();
+            this.loadRooms();
+          },
+          error: (err) => {
+            this.toast.error(err.error?.message || 'Room updated, but image upload failed');
+            this.closeEditModal();
+            this.loadRooms();
+          },
+        });
+      },
+      error: (err) => this.toast.error(err.error?.message || 'Room update failed'),
     });
   }
 
@@ -189,11 +237,63 @@ export class AdminRoomManagementComponent implements OnInit {
     this.imagePreviewUrl = URL.createObjectURL(file);
   }
 
+  onEditDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.editDragOver = true;
+  }
+
+  onEditDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.editDragOver = false;
+  }
+
+  onEditDrop(event: DragEvent) {
+    event.preventDefault();
+    this.editDragOver = false;
+    const file = event.dataTransfer?.files?.[0] || null;
+    this.setEditImageFile(file);
+  }
+
+  onEditFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+    this.setEditImageFile(file);
+  }
+
+  private setEditImageFile(file: File | null) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      this.toast.error('Only image files are allowed');
+      return;
+    }
+    this.editSelectedImageFile = file;
+    this.editImagePreviewUrl = URL.createObjectURL(file);
+  }
+
   clearImageSelection() {
     this.selectedImageFile = null;
     if (this.imagePreviewUrl) {
       URL.revokeObjectURL(this.imagePreviewUrl);
     }
     this.imagePreviewUrl = null;
+  }
+
+  clearEditImageSelection() {
+    this.editSelectedImageFile = null;
+    this.editImagePreviewUrl = null;
+  }
+
+  closeEditModal() {
+    this.editingRoomId = null;
+    this.showEditModal = false;
+    this.editForm.reset({
+      room_number: '',
+      type: 'Single',
+      price: 1000,
+      status: 'Available',
+      description: '',
+      amenitiesText: '',
+    });
+    this.clearEditImageSelection();
   }
 }

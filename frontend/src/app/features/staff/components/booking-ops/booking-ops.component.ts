@@ -57,6 +57,10 @@ export class BookingOpsComponent implements OnInit, OnDestroy {
     this.showActionModal = true;
   }
 
+  openDetails(booking: any) {
+    this.useBooking(booking);
+  }
+
   closeModal() {
     this.showActionModal = false;
   }

@@ -35,15 +35,17 @@
           <option *ngFor="let t of feedbackTypes" [value]="t">{{ t }}</option>
         </select>
       </div>
-      <div *ngFor="let f of feedbacks" class="list-row p-3 mb-2">
-        <div class="fw-semibold">
-          Booking {{ f.booking?.booking_id || f.booking_id }} | Room #{{ f.booking?.room?.room_number || '-' }}
+      <div class="feedback-scroll">
+        <div *ngFor="let f of feedbacks" class="list-row p-3 mb-2">
+          <div class="fw-semibold">
+            Booking {{ f.booking?.booking_id || f.booking_id }} | Room #{{ f.booking?.room?.room_number || '-' }}
+          </div>
+          <div class="muted my-1">{{ f.comment }}</div>
+          <div class="small">Type: {{ f.feedback_type || 'Service' }}</div>
+          <div class="small">Sentiment: {{ f.sentiment || 'pending' }}</div>
         </div>
-        <div class="muted my-1">{{ f.comment }}</div>
-        <div class="small">Type: {{ f.feedback_type || 'Service' }}</div>
-        <div class="small">Sentiment: {{ f.sentiment || 'pending' }}</div>
+        <div class="muted" *ngIf="!feedbacks.length">No feedback yet.</div>
       </div>
-      <div class="muted" *ngIf="!feedbacks.length">No feedback yet.</div>
     </div>
   </div>
 </div>

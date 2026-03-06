@@ -20,6 +20,12 @@
   background: #fff;
 }
 
+.feedback-scroll {
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
 .sent-pill {
   display: inline-flex;
   align-items: center;
