@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { HotelService } from '../../../../core/services/hotel.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 import { RoomStatusPopupComponent } from '../room-status-popup/room-status-popup.component';
 
 @Component({
@@ -31,7 +32,8 @@ export class RoomStatusComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private hotel: HotelService,
-    private toast: ToastService
+    private toast: ToastService,
+    private confirm: ConfirmService
   ) {}
 
   ngOnInit(): void {
@@ -80,18 +82,21 @@ export class RoomStatusComponent implements OnInit, OnDestroy {
       this.toast.info('Select room and status');
       return;
     }
-    this.saving = true;
-    this.hotel.updateRoomStatus(roomId, status).subscribe({
-      next: () => {
-        this.toast.success('Room status updated');
-        this.saving = false;
-        this.closeModal();
-        this.loadRooms();
-      },
-      error: (err) => {
-        this.saving = false;
-        this.toast.error(err.error?.message || 'Room update failed');
-      },
+    this.confirm.ask(`Are you sure you want to change room status to "${status}"?`, 'Update Room Status').then((ok) => {
+      if (!ok) return;
+      this.saving = true;
+      this.hotel.updateRoomStatus(roomId, status).subscribe({
+        next: () => {
+          this.toast.success('Room status updated');
+          this.saving = false;
+          this.closeModal();
+          this.loadRooms();
+        },
+        error: (err) => {
+          this.saving = false;
+          this.toast.error(err.error?.message || 'Room update failed');
+        },
+      });
     });
   }
 }

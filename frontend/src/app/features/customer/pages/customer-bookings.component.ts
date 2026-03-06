@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -15,7 +16,11 @@ import { environment } from '../../../../environments/environment';
 export class CustomerBookingsComponent implements OnInit {
   bookings: any[] = [];
 
-  constructor(private hotel: HotelService, private toast: ToastService) {}
+  constructor(
+    private hotel: HotelService,
+    private toast: ToastService,
+    private confirm: ConfirmService
+  ) {}
 
   ngOnInit() {
     this.loadBookings();
@@ -36,22 +41,28 @@ export class CustomerBookingsComponent implements OnInit {
   }
 
   cancel(id: number) {
-    this.hotel.cancelBooking(id).subscribe({
-      next: () => {
-        this.toast.success('Booking cancelled');
-        this.loadBookings();
-      },
-      error: (err) => this.toast.error(err.error?.message || 'Cancel failed'),
+    this.confirm.ask('Are you sure you want to cancel this booking?', 'Cancel Booking').then((ok) => {
+      if (!ok) return;
+      this.hotel.cancelBooking(id).subscribe({
+        next: () => {
+          this.toast.success('Booking cancelled');
+          this.loadBookings();
+        },
+        error: (err) => this.toast.error(err.error?.message || 'Cancel failed'),
+      });
     });
   }
 
   pay(id: number) {
-    this.hotel.payBooking(id).subscribe({
-      next: () => {
-        this.toast.success('Payment processed');
-        this.loadBookings();
-      },
-      error: (err) => this.toast.error(err.error?.message || 'Payment failed'),
+    this.confirm.ask('Do you want to proceed with payment for this booking?', 'Confirm Payment').then((ok) => {
+      if (!ok) return;
+      this.hotel.payBooking(id).subscribe({
+        next: () => {
+          this.toast.success('Payment processed');
+          this.loadBookings();
+        },
+        error: (err) => this.toast.error(err.error?.message || 'Payment failed'),
+      });
     });
   }
 }

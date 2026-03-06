@@ -42,3 +42,27 @@
     <button class="btn btn-primary btn-sm" type="button" (click)="sendAiMessage()" [disabled]="aiLoading">Send</button>
   </div>
 </section>
+
+<ng-container *ngIf="confirm.dialog$ | async as dialog">
+  <div class="confirm-backdrop" (click)="confirm.cancel()">
+    <div class="confirm-modal card p-4" (click)="$event.stopPropagation()">
+      <div class="confirm-head">
+        <div class="confirm-icon-wrap" aria-hidden="true">
+          <svg class="confirm-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"></circle>
+            <path d="M12 7.25v6.25" stroke="#b45309" stroke-width="2" stroke-linecap="round"></path>
+            <circle cx="12" cy="16.9" r="1.2" fill="#b45309"></circle>
+          </svg>
+        </div>
+        <h4 class="mb-0">{{ dialog.title }}</h4>
+      </div>
+
+      <div class="confirm-body">{{ dialog.message }}</div>
+
+      <div class="confirm-actions">
+        <button class="btn btn-outline-secondary px-4" type="button" (click)="confirm.cancel()">No</button>
+        <button class="btn btn-primary px-4" type="button" (click)="confirm.confirm()">Yes</button>
+      </div>
+    </div>
+  </div>
+</ng-container>

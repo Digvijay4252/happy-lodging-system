@@ -3,6 +3,7 @@ import { CustomerDashboardComponent } from '../pages/customer-dashboard.componen
 import { CustomerBookingsComponent } from '../pages/customer-bookings.component';
 import { CustomerIssuesComponent } from '../pages/customer-issues.component';
 import { CustomerFeedbackComponent } from '../pages/customer-feedback.component';
+import { CustomerMealsComponent } from '../pages/customer-meals.component';
 import { authGuard } from '../../../core/guards/auth.guard';
 import { roleGuard } from '../../../core/guards/role.guard';
 
@@ -32,6 +33,13 @@ export const customerRoutes: Routes = [
     path: 'customer/feedback',
     component: CustomerFeedbackComponent,
     title: 'My Feedback | Happy Lodging',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['customer'] },
+  },
+  {
+    path: 'customer/meals',
+    component: CustomerMealsComponent,
+    title: 'Meal Booking | Happy Lodging',
     canActivate: [authGuard, roleGuard],
     data: { roles: ['customer'] },
   },

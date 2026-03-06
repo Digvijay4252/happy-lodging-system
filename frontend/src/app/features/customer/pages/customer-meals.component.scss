@@ -1,0 +1,58 @@
+.menu-list {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.7rem;
+  padding: 0.6rem;
+  max-height: 320px;
+  overflow: auto;
+  background: #fbfcff;
+}
+
+.menu-item {
+  border: 1px solid #d5dfeb;
+  border-radius: 0.65rem;
+  background: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.menu-top {
+  display: flex;
+  gap: 0.65rem;
+  margin-bottom: 0.45rem;
+}
+
+.menu-meta {
+  min-width: 0;
+}
+
+.dish-image {
+  width: 72px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid #d5dfeb;
+  background: #eef3fb;
+  flex: 0 0 72px;
+}
+
+.qty-box {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.qty-input {
+  width: 64px;
+  text-align: center;
+}
+
+.muted {
+  color: #607086;
+}
+
+@media (max-width: 520px) {
+  .dish-image {
+    width: 64px;
+    height: 48px;
+    flex-basis: 64px;
+  }
+}

@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { TicketUpdatePopupComponent } from '../../staff/components/ticket-update-popup/ticket-update-popup.component';
 
 @Component({
@@ -30,7 +31,8 @@ export class AdminIssuesComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private hotel: HotelService,
-    private toast: ToastService
+    private toast: ToastService,
+    private confirm: ConfirmService
   ) {}
 
   ngOnInit(): void {
@@ -91,21 +93,24 @@ export class AdminIssuesComponent implements OnInit {
   }
 
   updateTicket(ticketId: number, status: string, assignedStaffId?: number) {
-    const payload: any = { status };
-    if (assignedStaffId) payload.assigned_staff_id = Number(assignedStaffId);
+    this.confirm.ask(`Are you sure you want to set issue status to "${status}"?`, 'Update Issue Status').then((ok) => {
+      if (!ok) return;
+      const payload: any = { status };
+      if (assignedStaffId) payload.assigned_staff_id = Number(assignedStaffId);
 
-    this.saving = true;
-    this.hotel.updateTicket(ticketId, payload).subscribe({
-      next: () => {
-        this.toast.success('Issue updated');
-        this.saving = false;
-        this.closeTicketPopup();
-        this.loadTickets();
-      },
-      error: (err) => {
-        this.saving = false;
-        this.toast.error(err.error?.message || 'Issue update failed');
-      },
+      this.saving = true;
+      this.hotel.updateTicket(ticketId, payload).subscribe({
+        next: () => {
+          this.toast.success('Issue updated');
+          this.saving = false;
+          this.closeTicketPopup();
+          this.loadTickets();
+        },
+        error: (err) => {
+          this.saving = false;
+          this.toast.error(err.error?.message || 'Issue update failed');
+        },
+      });
     });
   }
 }
