@@ -13,10 +13,12 @@ import { ToastService } from '../../../core/services/toast.service';
   styleUrl: './staff-feedbacks.component.scss',
 })
 export class StaffFeedbacksComponent implements OnInit {
+  readonly feedbackTypes = ['Service', 'Cleanliness', 'Room', 'Food', 'Facilities', 'Other'];
   feedbacks: any[] = [];
   filters = this.fb.group({
     q: [''],
     sentiment: [''],
+    feedback_type: [''],
   });
 
   constructor(

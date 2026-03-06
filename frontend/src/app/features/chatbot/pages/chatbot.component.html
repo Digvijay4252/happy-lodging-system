@@ -4,6 +4,7 @@
       <h4 class="mb-0">AI Hotel Assistant</h4>
       <a class="btn btn-outline-secondary btn-sm" [routerLink]="backRoute">Back</a>
     </div>
+    <div class="small mb-2 text-muted">Provider: <strong>{{ aiProvider }}</strong> (free option: <code>ollama</code>)</div>
     <div class="chat-window p-3 mb-3">
       <div *ngFor="let item of messages" class="mb-2">
         <strong>{{ item.role }}:</strong> {{ item.text }}
