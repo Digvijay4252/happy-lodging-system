@@ -27,6 +27,12 @@
         <option value="negative">negative</option>
       </select>
     </div>
+    <div class="col-md-3">
+      <select class="form-select" formControlName="feedback_type">
+        <option value="">All Feedback Type</option>
+        <option *ngFor="let t of feedbackTypes" [value]="t">{{ t }}</option>
+      </select>
+    </div>
   </form>
 
   <div *ngIf="viewMode === 'tiles'">
@@ -37,6 +43,7 @@
             {{ f.customer?.name || '-' }} | Booking {{ f.booking?.booking_id || f.booking_id }} | Room #{{ f.booking?.room?.room_number || '-' }}
           </div>
           <div class="my-1">{{ f.comment }}</div>
+          <div class="small mb-1">Type: {{ f.feedback_type || 'Service' }}</div>
           <div class="small">
             Sentiment:
             <span class="sent-pill" [ngClass]="sentimentClass(f.sentiment)">{{ f.sentiment || 'pending' }}</span>
@@ -55,6 +62,7 @@
           <th>Booking</th>
           <th>Room</th>
           <th>Comment</th>
+          <th>Type</th>
           <th>Sentiment</th>
           <th></th>
         </tr>
@@ -65,6 +73,7 @@
           <td>{{ f.booking?.booking_id || f.booking_id }}</td>
           <td>#{{ f.booking?.room?.room_number || '-' }}</td>
           <td>{{ f.comment }}</td>
+          <td>{{ f.feedback_type || 'Service' }}</td>
           <td><span class="sent-pill" [ngClass]="sentimentClass(f.sentiment)">{{ f.sentiment || 'pending' }}</span></td>
           <td><button class="btn btn-sm btn-outline-secondary" type="button" (click)="openDetails(f)">Open</button></td>
         </tr>
@@ -82,6 +91,7 @@
       <div><strong>Customer:</strong> {{ selectedFeedback.customer?.name || '-' }} ({{ selectedFeedback.customer?.email || '-' }})</div>
       <div><strong>Booking:</strong> {{ selectedFeedback.booking?.booking_id || selectedFeedback.booking_id }}</div>
       <div><strong>Room:</strong> #{{ selectedFeedback.booking?.room?.room_number || '-' }} - {{ selectedFeedback.booking?.room?.type || '-' }}</div>
+      <div><strong>Type:</strong> {{ selectedFeedback.feedback_type || 'Service' }}</div>
       <div><strong>Sentiment:</strong> <span class="sent-pill" [ngClass]="sentimentClass(selectedFeedback.sentiment)">{{ selectedFeedback.sentiment || 'pending' }}</span></div>
       <div class="mt-2"><strong>Comment:</strong></div>
       <div>{{ selectedFeedback.comment }}</div>

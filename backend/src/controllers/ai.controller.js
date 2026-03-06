@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const db = require('../models');
-const { chatAssistant, sentimentFromText } = require('../services/ai.service');
+const { chatAssistant, sentimentFromText, getAiProviderStatus } = require('../services/ai.service');
 const { predictRevenue } = require('../services/analytics.service');
 
 exports.smartRecommendations = async (req, res, next) => {
@@ -79,4 +79,8 @@ exports.sentimentAnalysis = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+exports.status = async (_req, res) => {
+  return res.json(getAiProviderStatus());
 };

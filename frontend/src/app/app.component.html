@@ -3,3 +3,42 @@
 <div class="page-wrap container-fluid">
   <router-outlet></router-outlet>
 </div>
+
+<button
+  type="button"
+  class="ai-fab"
+  *ngIf="showFloatingAiButton"
+  (click)="openAiChat()"
+  aria-label="Open AI Chat"
+  title="AI Chat"
+>
+  AI
+</button>
+
+<section class="ai-popup" *ngIf="showFloatingAiButton && isAiOpen">
+  <div class="ai-popup-header">
+    <div class="ai-title">AI Room Assistant</div>
+    <button type="button" class="btn-close-mini" (click)="closeAiChat()" aria-label="Close chat">x</button>
+  </div>
+
+  <div class="ai-popup-body" #aiScrollWrap>
+    <div class="msg-row" *ngFor="let item of aiMessages" [class.msg-row-user]="item.role === 'You'">
+      <div class="msg" [class.msg-user]="item.role === 'You'" [class.msg-ai]="item.role === 'AI'">
+        <span class="msg-role">{{ item.role }}:</span> {{ item.text }}
+      </div>
+    </div>
+    <div class="msg-row" *ngIf="aiLoading">
+      <div class="msg msg-ai"><span class="msg-role">AI:</span> Typing...</div>
+    </div>
+  </div>
+
+  <div class="ai-popup-footer">
+    <input
+      class="form-control"
+      [(ngModel)]="aiInput"
+      placeholder="Ask about rooms, price, amenities..."
+      (keydown.enter)="sendAiMessage()"
+    />
+    <button class="btn btn-primary btn-sm" type="button" (click)="sendAiMessage()" [disabled]="aiLoading">Send</button>
+  </div>
+</section>

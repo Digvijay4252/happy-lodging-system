@@ -77,12 +77,17 @@ CREATE TABLE IF NOT EXISTS feedbacks (
   booking_id INT NOT NULL,
   user_id INT NOT NULL,
   comment VARCHAR(1000) NOT NULL,
+  feedback_type ENUM('Service','Cleanliness','Room','Food','Facilities','Other') NOT NULL DEFAULT 'Service',
   sentiment ENUM('positive','neutral','negative'),
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_feedback_booking FOREIGN KEY (booking_id) REFERENCES bookings(id),
   CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- For existing databases created before feedback_type was added, run:
+-- ALTER TABLE feedbacks
+--   ADD COLUMN feedback_type ENUM('Service','Cleanliness','Room','Food','Facilities','Other') NOT NULL DEFAULT 'Service';
 
 -- Auto table creation is already handled in backend/src/server.js:
 -- await db.sequelize.sync({ alter: false });
