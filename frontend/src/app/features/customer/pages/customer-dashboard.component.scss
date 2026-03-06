@@ -16,3 +16,9 @@
   border: 1px solid #d5dfeb;
   display: block;
 }
+
+.rooms-scroll {
+  max-height: 620px;
+  overflow: auto;
+  padding-right: 0.25rem;
+}

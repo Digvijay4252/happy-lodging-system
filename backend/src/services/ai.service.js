@@ -25,7 +25,7 @@ async function chatWithOllama(message, context) {
         {
           role: 'system',
           content:
-            'You are a hotel assistant. Answer FAQs, help with room finding and booking guidance in concise steps.',
+            'You are a hotel assistant. Use provided database context as source of truth. If data is missing, say it clearly and ask a short follow-up. Keep answers concise and actionable.',
         },
         {
           role: 'user',
@@ -65,7 +65,7 @@ function mockChat(message, context) {
     return 'You can cancel from My Bookings before check-in date. After cancellation, room availability is updated automatically.';
   }
 
-  return 'I can help with room search, booking flow, payments, and cancellation rules. Tell me your dates and budget.';
+  return 'I can help with rooms, bookings, meals, issues, and feedback using current hotel data. Ask with date, slot, booking id, or budget.';
 }
 
 async function sentimentFromOllama(text) {
@@ -117,7 +117,7 @@ exports.chatAssistant = async (message, context) => {
           {
             role: 'system',
             content:
-              'You are a hotel assistant. Answer FAQs, help with room finding and booking guidance in concise steps.',
+              'You are a hotel assistant. Use provided database context as source of truth. If information is not in context, say so clearly. Keep answers concise and actionable.',
           },
           {
             role: 'user',
