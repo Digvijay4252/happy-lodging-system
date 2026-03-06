@@ -7,6 +7,31 @@ Full stack Hotel Management Web App using:
 - Auth: JWT + bcrypt
 - Styling: Bootstrap
 - AI Integration: OpenAI API (chatbot, recommendations, sentiment, revenue prediction helpers)
+- Food Module: Daily meal menu + meal orders (Admin/Staff/Customer)
+
+## Project Explanation
+
+Happy Lodging System is a role-based hotel operations platform that handles the complete hotel workflow from room discovery to post-stay services.
+
+### What this project solves
+- Centralizes booking, check-in/check-out, room status management, tickets/issues, and customer feedback.
+- Separates access by role so each user sees only relevant actions.
+- Adds AI assistant support for hotel FAQs, booking guidance, and recommendation helpers.
+- Adds a food booking workflow where hotel staff/admin manage menus and customers place meal orders tied to valid bookings.
+
+### How the system works (high-level)
+1. User authenticates via JWT (admin/staff/customer).
+2. Customer searches rooms, books, pays (simulation), tracks bookings, and can raise issues/feedback.
+3. Staff handles check-in/check-out, room status updates, and service tickets.
+4. Admin monitors dashboard metrics, manages rooms/bookings/staff/customers, and reviews reports.
+5. Food module runs daily menus (Breakfast/Lunch/Dinner), supports auto carry-forward from previous day, and allows customer meal ordering only within active booking dates.
+6. AI endpoints support chatbot and analysis features integrated in the UI.
+
+### Architecture summary
+- Frontend: Angular standalone feature modules with route guards and reusable services/components.
+- Backend: Express REST APIs with Sequelize models/controllers/routes and middleware for auth/RBAC/error handling.
+- Database: MySQL schema aligned with Sequelize model definitions.
+- Security: bcrypt password hashing + JWT auth + role middleware.
 
 ## Project Structure
 
@@ -175,6 +200,49 @@ npm start
 - `GET /api/ai/revenue-prediction`
 - `POST /api/ai/sentiment`
 
+### Food Module
+
+#### Admin/Staff
+- `GET /api/food/items`
+- `POST /api/food/items`
+- `PUT /api/food/items/:id`
+- `DELETE /api/food/items/:id`
+- `GET /api/food/menus?date_from=YYYY-MM-DD&date_to=YYYY-MM-DD&meal_slot=Breakfast`
+- `POST /api/food/menus/upsert`
+- `POST /api/food/menus/carry-forward`
+- `GET /api/food/orders`
+- `PATCH /api/food/orders/:id/status`
+
+#### Customer
+- `GET /api/food/menu?menu_date=YYYY-MM-DD&meal_slot=Breakfast`
+- `POST /api/food/orders`
+- `GET /api/food/orders/me`
+- `PATCH /api/food/orders/:id/cancel`
+
+Sample create/update daily menu:
+```json
+{
+  "menu_date": "2026-03-10",
+  "meal_slot": "Breakfast",
+  "food_item_ids": [1, 2, 3]
+}
+```
+
+Sample customer meal order:
+```json
+{
+  "booking_id": 12,
+  "order_date": "2026-03-10",
+  "meal_slot": "Breakfast",
+  "serving_type": "RoomDelivery",
+  "notes": "Less spicy",
+  "items": [
+    { "food_item_id": 1, "qty": 2 },
+    { "food_item_id": 3, "qty": 1 }
+  ]
+}
+```
+
 ## Database Tables
 
 Implemented tables:
@@ -185,10 +253,28 @@ Implemented tables:
 - `payments`
 - `service_requests`
 - `feedbacks`
+- `food_items`
+- `daily_meal_menus`
+- `daily_meal_menu_items`
+- `meal_orders`
+- `meal_order_items`
 
 All table schemas are in:
 - Sequelize models under `backend/src/models`
 - SQL file `backend/schema.sql`
+
+## Food Module UI Routes
+
+- Admin: `/admin/food`
+- Staff: `/staff/food`
+- Customer: `/customer/meals`
+
+## Seed Data (Food Module)
+
+`npm run seed` now also creates:
+- sample food items
+- today's breakfast/lunch/dinner menus
+- sample customer + booking + meal order
 
 ## Notes for Production Hardening
 

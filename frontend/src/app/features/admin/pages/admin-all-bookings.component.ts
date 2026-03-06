@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -20,7 +21,11 @@ export class AdminAllBookingsComponent implements OnInit {
   showBookingPopup = false;
   popupStatus = 'Booked';
 
-  constructor(private hotel: HotelService, private toast: ToastService) {}
+  constructor(
+    private hotel: HotelService,
+    private toast: ToastService,
+    private confirm: ConfirmService
+  ) {}
 
   ngOnInit() {
     this.loadBookings();
@@ -41,12 +46,15 @@ export class AdminAllBookingsComponent implements OnInit {
   }
 
   changeStatus(id: number, status: string) {
-    this.hotel.updateBookingStatus(id, status).subscribe({
-      next: () => {
-        this.toast.success('Booking status updated');
-        this.loadBookings();
-      },
-      error: (err) => this.toast.error(err.error?.message || 'Status update failed'),
+    this.confirm.ask(`Are you sure you want to change booking status to "${status}"?`, 'Update Booking Status').then((ok) => {
+      if (!ok) return;
+      this.hotel.updateBookingStatus(id, status).subscribe({
+        next: () => {
+          this.toast.success('Booking status updated');
+          this.loadBookings();
+        },
+        error: (err) => this.toast.error(err.error?.message || 'Status update failed'),
+      });
     });
   }
 
@@ -66,6 +74,10 @@ export class AdminAllBookingsComponent implements OnInit {
 
   updateFromPopup() {
     if (!this.selectedBooking) return;
+    if ((this.selectedBooking.status || '') === this.popupStatus) {
+      this.closeDetails();
+      return;
+    }
     this.changeStatus(this.selectedBooking.id, this.popupStatus);
     this.closeDetails();
   }

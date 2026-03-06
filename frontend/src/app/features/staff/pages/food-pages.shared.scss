@@ -1,0 +1,93 @@
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.45rem;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #d5dfeb;
+  border-radius: 0.7rem;
+  padding: 0.5rem;
+  background: #fbfcff;
+}
+
+.pick-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid #d5dfeb;
+  border-radius: 0.6rem;
+  padding: 0.35rem 0.5rem;
+  background: #fff;
+}
+
+.muted {
+  color: #607086;
+}
+
+.page-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.drop-zone {
+  border: 1.5px dashed #9eb2ca;
+  border-radius: 0.75rem;
+  padding: 0.8rem;
+  background: #f8fbff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.drop-zone.drag-over {
+  border-color: #2563eb;
+  background: #edf4ff;
+}
+
+.image-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.preview-img {
+  width: 90px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid #d5dfeb;
+}
+
+.item-thumb {
+  width: 92px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid #d5dfeb;
+}
+
+.ops-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.ops-modal {
+  width: min(760px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: 1rem;
+  border: 1px solid #d7e0ec;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.24);
+}
+
+.popup-title {
+  color: #0c2a4f;
+  font-weight: 800;
+}

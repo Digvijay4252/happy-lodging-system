@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -29,7 +30,12 @@ export class AdminRoomManagementComponent implements OnInit {
     amenitiesText: [''],
   });
 
-  constructor(private fb: FormBuilder, private hotel: HotelService, private toast: ToastService) {}
+  constructor(
+    private fb: FormBuilder,
+    private hotel: HotelService,
+    private toast: ToastService,
+    private confirm: ConfirmService
+  ) {}
 
   resolveImageUrl(imageUrl: string): string {
     if (!imageUrl) return '';
@@ -138,12 +144,15 @@ export class AdminRoomManagementComponent implements OnInit {
   }
 
   remove(roomId: number) {
-    this.hotel.deleteRoom(roomId).subscribe({
-      next: () => {
-        this.toast.success('Room deleted');
-        this.loadRooms();
-      },
-      error: (err) => this.toast.error(err.error?.message || 'Room deletion failed'),
+    this.confirm.ask('Are you sure you want to delete this room?', 'Delete Room').then((ok) => {
+      if (!ok) return;
+      this.hotel.deleteRoom(roomId).subscribe({
+        next: () => {
+          this.toast.success('Room deleted');
+          this.loadRooms();
+        },
+        error: (err) => this.toast.error(err.error?.message || 'Room deletion failed'),
+      });
     });
   }
 

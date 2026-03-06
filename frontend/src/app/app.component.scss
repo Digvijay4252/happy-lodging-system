@@ -128,3 +128,56 @@
     bottom: 10px;
   }
 }
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.confirm-modal {
+  width: min(560px, 100%);
+  border-radius: 1rem;
+  border: 1px solid #d7e0ec;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.24);
+}
+
+.confirm-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.confirm-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff7ed;
+}
+
+.confirm-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.confirm-body {
+  color: #334155;
+  font-size: 1.02rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
