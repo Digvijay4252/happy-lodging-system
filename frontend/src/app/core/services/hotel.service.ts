@@ -178,4 +178,88 @@ export class HotelService {
   aiRevenuePrediction() {
     return this.http.get<any>(`${this.base}/ai/revenue-prediction`);
   }
+
+  // Food module
+  listFoodItems(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/food/items`, { params });
+  }
+
+  createFoodItem(payload: any) {
+    return this.http.post<any>(`${this.base}/food/items`, payload);
+  }
+
+  updateFoodItem(id: number, payload: any) {
+    return this.http.put<any>(`${this.base}/food/items/${id}`, payload);
+  }
+
+  deleteFoodItem(id: number) {
+    return this.http.delete<any>(`${this.base}/food/items/${id}`);
+  }
+
+  addFoodItemImageFile(id: number, file: File) {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.post<any>(`${this.base}/food/items/${id}/image`, formData);
+  }
+
+  upsertDailyMealMenu(payload: { menu_date: string; meal_slot: 'Breakfast' | 'Lunch' | 'Dinner'; food_item_ids: number[] }) {
+    return this.http.post<any>(`${this.base}/food/menus/upsert`, payload);
+  }
+
+  getMenuForDateSlot(menu_date: string, meal_slot: 'Breakfast' | 'Lunch' | 'Dinner') {
+    const params = new HttpParams().set('menu_date', menu_date).set('meal_slot', meal_slot);
+    return this.http.get<any>(`${this.base}/food/menu`, { params });
+  }
+
+  listDailyMealMenus(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/food/menus`, { params });
+  }
+
+  carryForwardMenu(menu_date: string) {
+    return this.http.post<any>(`${this.base}/food/menus/carry-forward`, { menu_date });
+  }
+
+  placeMealOrder(payload: any) {
+    return this.http.post<any>(`${this.base}/food/orders`, payload);
+  }
+
+  myMealOrders(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/food/orders/me`, { params });
+  }
+
+  cancelMyMealOrder(id: number) {
+    return this.http.patch<any>(`${this.base}/food/orders/${id}/cancel`, {});
+  }
+
+  mealOrders(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/food/orders`, { params });
+  }
+
+  updateMealOrderStatus(id: number, status: 'Placed' | 'Preparing' | 'Delivered' | 'Cancelled') {
+    return this.http.patch<any>(`${this.base}/food/orders/${id}/status`, { status });
+  }
 }

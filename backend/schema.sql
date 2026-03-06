@@ -85,6 +85,75 @@ CREATE TABLE IF NOT EXISTS feedbacks (
   CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS food_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  description VARCHAR(500),
+  category VARCHAR(80) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  image_url VARCHAR(255),
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_by INT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_food_item_creator FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS daily_meal_menus (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  menu_date DATE NOT NULL,
+  meal_slot ENUM('Breakfast','Lunch','Dinner') NOT NULL,
+  source_type ENUM('Manual','AutoCarryForward') NOT NULL DEFAULT 'Manual',
+  created_by INT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_menu_date_slot (menu_date, meal_slot),
+  CONSTRAINT fk_daily_menu_creator FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS daily_meal_menu_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  daily_menu_id INT NOT NULL,
+  food_item_id INT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_daily_menu_item (daily_menu_id, food_item_id),
+  CONSTRAINT fk_daily_menu_items_menu FOREIGN KEY (daily_menu_id) REFERENCES daily_meal_menus(id),
+  CONSTRAINT fk_daily_menu_items_food FOREIGN KEY (food_item_id) REFERENCES food_items(id)
+);
+
+CREATE TABLE IF NOT EXISTS meal_orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_code VARCHAR(40) NOT NULL UNIQUE,
+  user_id INT NOT NULL,
+  booking_id INT NOT NULL,
+  room_id INT NOT NULL,
+  order_date DATE NOT NULL,
+  meal_slot ENUM('Breakfast','Lunch','Dinner') NOT NULL,
+  serving_type ENUM('DineIn','Takeaway','RoomDelivery') NOT NULL,
+  total_amount DECIMAL(12,2) NOT NULL,
+  status ENUM('Placed','Preparing','Delivered','Cancelled') NOT NULL DEFAULT 'Placed',
+  notes VARCHAR(500),
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_meal_order_user FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_meal_order_booking FOREIGN KEY (booking_id) REFERENCES bookings(id),
+  CONSTRAINT fk_meal_order_room FOREIGN KEY (room_id) REFERENCES rooms(id)
+);
+
+CREATE TABLE IF NOT EXISTS meal_order_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  meal_order_id INT NOT NULL,
+  food_item_id INT NOT NULL,
+  qty INT NOT NULL DEFAULT 1,
+  unit_price DECIMAL(10,2) NOT NULL,
+  line_total DECIMAL(12,2) NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_meal_order_item_order FOREIGN KEY (meal_order_id) REFERENCES meal_orders(id),
+  CONSTRAINT fk_meal_order_item_food FOREIGN KEY (food_item_id) REFERENCES food_items(id)
+);
+
 -- For existing databases created before feedback_type was added, run:
 -- ALTER TABLE feedbacks
 --   ADD COLUMN feedback_type ENUM('Service','Cleanliness','Room','Food','Facilities','Other') NOT NULL DEFAULT 'Service';

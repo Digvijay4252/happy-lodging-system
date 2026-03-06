@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HotelService } from '../../../core/services/hotel.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { TicketUpdatePopupComponent } from '../components/ticket-update-popup/ticket-update-popup.component';
 
 @Component({
@@ -32,7 +33,12 @@ export class StaffTicketsComponent implements OnInit {
   showTicketPopup = false;
   saving = false;
 
-  constructor(private fb: FormBuilder, private hotel: HotelService, private toast: ToastService) {}
+  constructor(
+    private fb: FormBuilder,
+    private hotel: HotelService,
+    private toast: ToastService,
+    private confirm: ConfirmService
+  ) {}
 
   ngOnInit() {
     this.loadTickets();
@@ -54,21 +60,24 @@ export class StaffTicketsComponent implements OnInit {
   }
 
   updateTicket(ticketId: number, status: string, assignedStaffId?: number) {
-    const payload: any = { status };
-    if (assignedStaffId) payload.assigned_staff_id = Number(assignedStaffId);
+    this.confirm.ask(`Are you sure you want to set ticket status to "${status}"?`, 'Update Ticket Status').then((ok) => {
+      if (!ok) return;
+      const payload: any = { status };
+      if (assignedStaffId) payload.assigned_staff_id = Number(assignedStaffId);
 
-    this.saving = true;
-    this.hotel.updateTicket(ticketId, payload).subscribe({
-      next: () => {
-        this.toast.success('Ticket updated');
-        this.saving = false;
-        this.closeTicketPopup();
-        this.loadTickets();
-      },
-      error: (err) => {
-        this.saving = false;
-        this.toast.error(err.error?.message || 'Ticket update failed');
-      },
+      this.saving = true;
+      this.hotel.updateTicket(ticketId, payload).subscribe({
+        next: () => {
+          this.toast.success('Ticket updated');
+          this.saving = false;
+          this.closeTicketPopup();
+          this.loadTickets();
+        },
+        error: (err) => {
+          this.saving = false;
+          this.toast.error(err.error?.message || 'Ticket update failed');
+        },
+      });
     });
   }
 

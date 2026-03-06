@@ -1,0 +1,25 @@
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.45rem;
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid #d5dfeb;
+  border-radius: 0.7rem;
+  padding: 0.5rem;
+  background: #fbfcff;
+}
+
+.pick-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid #d5dfeb;
+  border-radius: 0.6rem;
+  padding: 0.35rem 0.5rem;
+  background: #fff;
+}
+
+.muted {
+  color: #607086;
+}

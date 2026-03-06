@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from './core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { HotelService } from './core/services/hotel.service';
+import { ConfirmService } from './core/services/confirm.service';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +30,8 @@ export class AppComponent {
   constructor(
     private router: Router,
     public auth: AuthService,
-    private hotel: HotelService
+    private hotel: HotelService,
+    public confirm: ConfirmService
   ) {
     this.currentUrl = this.router.url || '';
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event: any) => {
