@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { HotelService } from '../../../../core/services/hotel.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-booking-ops',
@@ -30,7 +31,8 @@ export class BookingOpsComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private hotel: HotelService,
-    private toast: ToastService
+    private toast: ToastService,
+    private confirm: ConfirmService
   ) {}
 
   ngOnInit(): void {
@@ -89,13 +91,16 @@ export class BookingOpsComponent implements OnInit, OnDestroy {
       this.toast.info('Select a booking first');
       return;
     }
-    this.hotel.checkIn(id).subscribe({
-      next: () => {
-        this.toast.success('Checked in');
-        this.closeModal();
-        this.loadBookings();
-      },
-      error: (err) => this.toast.error(err.error?.message || 'Check-in failed'),
+    this.confirm.ask('Are you sure you want to check in this booking?', 'Confirm Check-In').then((ok) => {
+      if (!ok) return;
+      this.hotel.checkIn(id).subscribe({
+        next: () => {
+          this.toast.success('Checked in');
+          this.closeModal();
+          this.loadBookings();
+        },
+        error: (err) => this.toast.error(err.error?.message || 'Check-in failed'),
+      });
     });
   }
 
@@ -105,13 +110,16 @@ export class BookingOpsComponent implements OnInit, OnDestroy {
       this.toast.info('Select a booking first');
       return;
     }
-    this.hotel.checkOut(id).subscribe({
-      next: () => {
-        this.toast.success('Checked out');
-        this.closeModal();
-        this.loadBookings();
-      },
-      error: (err) => this.toast.error(err.error?.message || 'Check-out failed'),
+    this.confirm.ask('Are you sure you want to check out this booking?', 'Confirm Check-Out').then((ok) => {
+      if (!ok) return;
+      this.hotel.checkOut(id).subscribe({
+        next: () => {
+          this.toast.success('Checked out');
+          this.closeModal();
+          this.loadBookings();
+        },
+        error: (err) => this.toast.error(err.error?.message || 'Check-out failed'),
+      });
     });
   }
 }

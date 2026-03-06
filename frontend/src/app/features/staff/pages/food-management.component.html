@@ -1,0 +1,126 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Food Management</h3>
+  <a class="btn btn-outline-secondary" [routerLink]="backRoute">Back to Dashboard</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="card surface-card p-3 mb-3">
+      <h5 class="mb-2">{{ editingFoodId ? 'Edit Food Item' : 'Add Food Item' }}</h5>
+      <form [formGroup]="foodForm" (ngSubmit)="saveFood()">
+        <input class="form-control mb-2" placeholder="Dish Name" formControlName="name" />
+        <textarea class="form-control mb-2" rows="2" placeholder="Description" formControlName="description"></textarea>
+        <div class="row g-2 mb-2">
+          <div class="col-6">
+            <input class="form-control" placeholder="Category" formControlName="category" />
+          </div>
+          <div class="col-6">
+            <input class="form-control" type="number" placeholder="Price" formControlName="price" />
+          </div>
+        </div>
+        <input class="form-control mb-2" placeholder="Image URL (optional)" formControlName="image_url" />
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" formControlName="is_active" id="food-active" />
+          <label class="form-check-label" for="food-active">Active</label>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" type="submit">{{ editingFoodId ? 'Update Food' : 'Add Food' }}</button>
+          <button class="btn btn-outline-secondary" type="button" (click)="cancelEditFood()" *ngIf="editingFoodId">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card surface-card p-3">
+      <h5>Food Items</h5>
+      <div *ngFor="let item of foodItems" class="list-row p-2 mb-2">
+        <div class="fw-semibold">{{ item.name }} - {{ item.price }}</div>
+        <div class="small muted">{{ item.category }} | {{ item.is_active ? 'Active' : 'Inactive' }}</div>
+        <div class="small muted">{{ item.description || '-' }}</div>
+        <div class="d-flex gap-2 mt-2">
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="editFood(item)">Edit</button>
+          <button class="btn btn-sm btn-outline-danger" type="button" (click)="deleteFood(item.id)">Delete</button>
+        </div>
+      </div>
+      <div class="muted" *ngIf="!foodItems.length">No food items available.</div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card surface-card p-3 mb-3">
+      <h5>Daily Meal Menu Planner</h5>
+      <form [formGroup]="menuForm" (ngSubmit)="saveMenu()">
+        <div class="row g-2 mb-2">
+          <div class="col-md-6">
+            <input class="form-control" type="date" formControlName="menu_date" />
+          </div>
+          <div class="col-md-6">
+            <select class="form-select" formControlName="meal_slot">
+              <option *ngFor="let s of mealSlots" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="picker-grid mb-2">
+          <label class="pick-item" *ngFor="let item of foodItems">
+            <input
+              type="checkbox"
+              [checked]="hasFoodSelected(item.id)"
+              (change)="toggleFoodSelection(item.id, $any($event.target).checked)"
+            />
+            <span>{{ item.name }} ({{ item.price }})</span>
+          </label>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" type="submit">Save Menu</button>
+          <button class="btn btn-outline-dark" type="button" (click)="carryForward()">Auto Carry Forward</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card surface-card p-3 mb-3">
+      <h5>Daily Menus</h5>
+      <div *ngFor="let m of menus" class="list-row p-2 mb-2">
+        <div class="fw-semibold">{{ m.menu_date }} | {{ m.meal_slot }} | {{ m.source_type }}</div>
+        <div class="small muted">
+          Dishes:
+          <span *ngFor="let mi of m.menu_items; let last = last">{{ mi.food_item?.name }}<span *ngIf="!last">, </span></span>
+        </div>
+      </div>
+      <div class="muted" *ngIf="!menus.length">No menus found.</div>
+    </div>
+
+    <div class="card surface-card p-3">
+      <h5>Meal Orders</h5>
+      <form [formGroup]="orderFilters" class="row g-2 mb-2">
+        <div class="col-md-4"><input class="form-control" placeholder="Search order/customer/booking/room" formControlName="q" /></div>
+        <div class="col-md-3">
+          <select class="form-select" formControlName="status">
+            <option value="">All Status</option>
+            <option *ngFor="let s of orderStatuses" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+        <div class="col-md-3"><input class="form-control" type="date" formControlName="order_date" /></div>
+        <div class="col-md-2">
+          <select class="form-select" formControlName="serving_type">
+            <option value="">Any Mode</option>
+            <option value="DineIn">DineIn</option>
+            <option value="Takeaway">Takeaway</option>
+            <option value="RoomDelivery">RoomDelivery</option>
+          </select>
+        </div>
+      </form>
+
+      <div *ngFor="let o of mealOrders" class="list-row p-2 mb-2">
+        <div class="d-flex justify-content-between align-items-center gap-2">
+          <div>
+            <div class="fw-semibold">{{ o.order_code }} | {{ o.customer?.name || '-' }} | Room #{{ o.room?.room_number || '-' }}</div>
+            <div class="small muted">{{ o.order_date }} | {{ o.meal_slot }} | {{ o.serving_type }} | Total {{ o.total_amount }}</div>
+          </div>
+          <select class="form-select form-select-sm w-auto" [ngModel]="o.status" (ngModelChange)="updateOrderStatus(o.id, $event)">
+            <option *ngFor="let s of orderStatuses" [ngValue]="s">{{ s }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="muted" *ngIf="!mealOrders.length">No meal orders found.</div>
+    </div>
+  </div>
+</div>

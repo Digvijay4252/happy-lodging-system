@@ -1,0 +1,45 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Meal Orders</h3>
+  <a class="btn btn-outline-secondary" [routerLink]="backRoute">Back to Dashboard</a>
+</div>
+
+<div class="page-tabs mb-3">
+  <a class="btn btn-outline-primary btn-sm" [routerLink]="baseRoute + '/items'">Food Items</a>
+  <a class="btn btn-outline-primary btn-sm" [routerLink]="baseRoute + '/menus'">Daily Meal Menu Planner</a>
+  <a class="btn btn-primary btn-sm" [routerLink]="baseRoute + '/orders'">Meal Orders</a>
+</div>
+
+<div class="card surface-card p-3">
+  <h5>All Meal Orders</h5>
+  <form [formGroup]="filters" class="row g-2 mb-2">
+    <div class="col-md-4"><input class="form-control" placeholder="Search order/customer/booking/room" formControlName="q" /></div>
+    <div class="col-md-3">
+      <select class="form-select" formControlName="status">
+        <option value="">All Status</option>
+        <option *ngFor="let s of orderStatuses" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+    <div class="col-md-3"><input class="form-control" type="date" formControlName="order_date" /></div>
+    <div class="col-md-2">
+      <select class="form-select" formControlName="serving_type">
+        <option value="">Any Mode</option>
+        <option value="DineIn">DineIn</option>
+        <option value="Takeaway">Takeaway</option>
+        <option value="RoomDelivery">RoomDelivery</option>
+      </select>
+    </div>
+  </form>
+
+  <div *ngFor="let o of mealOrders" class="list-row p-2 mb-2">
+    <div class="d-flex justify-content-between align-items-center gap-2">
+      <div>
+        <div class="fw-semibold">{{ o.order_code }} | {{ o.customer?.name || '-' }} | Room #{{ o.room?.room_number || '-' }}</div>
+        <div class="small muted">{{ o.order_date }} | {{ o.meal_slot }} | {{ o.serving_type }} | Total {{ o.total_amount }}</div>
+      </div>
+      <select class="form-select form-select-sm w-auto" [ngModel]="o.status" (ngModelChange)="updateOrderStatus(o.id, $event)">
+        <option *ngFor="let s of orderStatuses" [ngValue]="s">{{ s }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="muted" *ngIf="!mealOrders.length">No meal orders found.</div>
+</div>
