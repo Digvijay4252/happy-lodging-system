@@ -13,6 +13,7 @@ import { ToastService } from '../../../core/services/toast.service';
   styleUrl: './admin-feedbacks.component.scss',
 })
 export class AdminFeedbacksComponent implements OnInit {
+  readonly feedbackTypes = ['Service', 'Cleanliness', 'Room', 'Food', 'Facilities', 'Other'];
   viewMode: 'tiles' | 'table' = 'tiles';
   feedbacks: any[] = [];
   selectedFeedback: any | null = null;
@@ -20,6 +21,7 @@ export class AdminFeedbacksComponent implements OnInit {
   filters = this.fb.group({
     q: [''],
     sentiment: [''],
+    feedback_type: [''],
   });
 
   constructor(

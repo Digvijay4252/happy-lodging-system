@@ -14,7 +14,13 @@
             {{ b.booking_id }} | Room #{{ b.room?.room_number || '-' }}
           </option>
         </select>
+        <select class="form-select mb-2" formControlName="feedback_type">
+          <option *ngFor="let t of feedbackTypes" [value]="t">{{ t }}</option>
+        </select>
         <textarea class="form-control mb-2" rows="4" placeholder="Write your feedback..." formControlName="comment"></textarea>
+        <div class="small text-danger mb-2" *ngIf="form.controls.comment.touched && form.controls.comment.invalid">
+          Feedback must be at least 3 characters.
+        </div>
         <button class="btn btn-primary">Submit Feedback</button>
       </form>
     </div>
@@ -22,12 +28,19 @@
 
   <div class="col-lg-7">
     <div class="card surface-card p-3">
-      <h5>Previous Feedback</h5>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Previous Feedback</h5>
+        <select class="form-select w-auto" [ngModel]="selectedFeedbackTypeFilter" (ngModelChange)="onTypeFilterChange($event)">
+          <option value="">All Types</option>
+          <option *ngFor="let t of feedbackTypes" [value]="t">{{ t }}</option>
+        </select>
+      </div>
       <div *ngFor="let f of feedbacks" class="list-row p-3 mb-2">
         <div class="fw-semibold">
           Booking {{ f.booking?.booking_id || f.booking_id }} | Room #{{ f.booking?.room?.room_number || '-' }}
         </div>
         <div class="muted my-1">{{ f.comment }}</div>
+        <div class="small">Type: {{ f.feedback_type || 'Service' }}</div>
         <div class="small">Sentiment: {{ f.sentiment || 'pending' }}</div>
       </div>
       <div class="muted" *ngIf="!feedbacks.length">No feedback yet.</div>

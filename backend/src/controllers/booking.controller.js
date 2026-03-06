@@ -148,7 +148,7 @@ exports.simulatePayment = async (req, res, next) => {
 
 exports.createFeedback = async (req, res, next) => {
   try {
-    const { booking_id, comment } = req.body;
+    const { booking_id, comment, feedback_type } = req.body;
 
     const booking = await db.Booking.findOne({
       where: { id: booking_id, user_id: req.user.id, status: 'CheckedOut' },
@@ -158,10 +158,14 @@ exports.createFeedback = async (req, res, next) => {
       return res.status(400).json({ message: 'Feedback allowed for checked-out bookings only' });
     }
 
+    const allowedTypes = ['Service', 'Cleanliness', 'Room', 'Food', 'Facilities', 'Other'];
+    const feedbackType = allowedTypes.includes(feedback_type) ? feedback_type : 'Service';
+
     const feedback = await db.Feedback.create({
       booking_id,
       user_id: req.user.id,
       comment,
+      feedback_type: feedbackType,
       sentiment: null,
     });
 
@@ -173,8 +177,12 @@ exports.createFeedback = async (req, res, next) => {
 
 exports.getMyFeedback = async (req, res, next) => {
   try {
+    const { feedback_type } = req.query;
+    const where = { user_id: req.user.id };
+    if (feedback_type) where.feedback_type = feedback_type;
+
     const feedbacks = await db.Feedback.findAll({
-      where: { user_id: req.user.id },
+      where,
       include: [
         {
           model: db.Booking,

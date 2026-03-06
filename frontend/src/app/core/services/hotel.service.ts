@@ -68,12 +68,18 @@ export class HotelService {
     return this.http.get<any>(`${this.base}/bookings/issues/me`);
   }
 
-  submitFeedback(payload: { booking_id: number; comment: string }) {
+  submitFeedback(payload: { booking_id: number; comment: string; feedback_type?: string }) {
     return this.http.post<any>(`${this.base}/bookings/feedback`, payload);
   }
 
-  myFeedbacks() {
-    return this.http.get<any>(`${this.base}/bookings/feedback/me`);
+  myFeedbacks(filters: any = {}) {
+    let params = new HttpParams();
+    Object.keys(filters).forEach((key) => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        params = params.set(key, filters[key]);
+      }
+    });
+    return this.http.get<any>(`${this.base}/bookings/feedback/me`, { params });
   }
 
   adminDashboard() {
@@ -159,6 +165,10 @@ export class HotelService {
   aiRecommendations(budget?: number) {
     const params = budget ? new HttpParams().set('budget', budget) : undefined;
     return this.http.get<any>(`${this.base}/ai/recommendations`, { params });
+  }
+
+  aiStatus() {
+    return this.http.get<any>(`${this.base}/ai/status`);
   }
 
   aiChat(message: string) {

@@ -16,6 +16,12 @@
         <option value="negative">negative</option>
       </select>
     </div>
+    <div class="col-md-3">
+      <select class="form-select" formControlName="feedback_type">
+        <option value="">All Feedback Type</option>
+        <option *ngFor="let t of feedbackTypes" [value]="t">{{ t }}</option>
+      </select>
+    </div>
   </form>
 
   <div *ngFor="let f of feedbacks" class="list-row p-3 mb-2">
@@ -23,6 +29,7 @@
       {{ f.customer?.name || '-' }} | Booking {{ f.booking?.booking_id || f.booking_id }} | Room #{{ f.booking?.room?.room_number || '-' }}
     </div>
     <div class="my-1">{{ f.comment }}</div>
+    <div class="small muted">Type: {{ f.feedback_type || 'Service' }}</div>
     <div class="small muted">Sentiment: {{ f.sentiment || 'pending' }}</div>
   </div>
   <div class="muted" *ngIf="!feedbacks.length">No feedback available.</div>
