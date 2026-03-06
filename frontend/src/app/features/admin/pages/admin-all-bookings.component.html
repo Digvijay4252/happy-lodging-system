@@ -16,26 +16,29 @@
   </div>
 
   <div *ngIf="viewMode === 'tiles'" class="tile-wrap">
-    <div *ngFor="let b of bookings" class="list-row p-3">
-      <div class="d-flex justify-content-between align-items-start gap-2">
-        <div class="d-flex align-items-center gap-2">
-          <img
-            *ngIf="b.room?.images?.length"
-            [src]="resolveImageUrl(b.room.images[0].image_url)"
-            alt="Room image"
-            class="room-thumb"
-          />
-          <div>
-            <div class="fw-semibold">{{ b.booking_id }} | {{ b.customer?.name }} | Room {{ b.room?.room_number }}</div>
-            <div class="small muted">{{ b.check_in }} to {{ b.check_out }}</div>
-            <div class="small">Amount: {{ b.total_amount }} | Payment: {{ b.payment_status }}</div>
-            <div class="small mt-1"><span class="status-pill" [ngClass]="statusClass(b.status)">{{ b.status }}</span></div>
-          </div>
-        </div>
-        <button class="btn btn-sm btn-outline-secondary" type="button" (click)="openDetails(b)">Open</button>
+    <div class="booking-tile" *ngFor="let b of bookings" (click)="openDetails(b)" role="button" tabindex="0" (keydown.enter)="openDetails(b)" (keydown.space)="openDetails(b)">
+      <div class="tile-head">
+        <div class="fw-semibold">{{ b.booking_id }}</div>
+        <button class="btn btn-sm btn-outline-secondary action-btn" type="button" (click)="$event.stopPropagation(); openDetails(b)">Use</button>
       </div>
+
+      <div class="muted small mb-2">ID: #{{ b.id }}</div>
+
+      <div class="tile-meta"><span>Customer</span><strong>{{ b.customer?.name || '-' }}</strong></div>
+      <div class="tile-meta"><span>Room</span><strong>#{{ b.room?.room_number || '-' }} - {{ b.room?.type || '-' }}</strong></div>
+      <div class="tile-meta"><span>Status</span><span class="status-pill" [ngClass]="statusClass(b.status)">{{ b.status }}</span></div>
+
+      <div class="tile-dates">{{ b.check_in }} to {{ b.check_out }}</div>
+      <div class="small muted mt-1">Amount: {{ b.total_amount }} | Payment: {{ b.payment_status }}</div>
+      <img
+        *ngIf="b.room?.images?.length"
+        [src]="resolveImageUrl(b.room.images[0].image_url)"
+        alt="Room image"
+        class="room-thumb mt-2"
+      />
     </div>
   </div>
+  
 
   <div class="table-wrap" *ngIf="viewMode === 'table'">
     <table class="table table-sm align-middle mb-0">

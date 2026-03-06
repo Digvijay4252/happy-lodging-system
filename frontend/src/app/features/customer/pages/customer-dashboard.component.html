@@ -30,19 +30,21 @@
   <div class="col-lg-8">
     <div class="card surface-card p-3">
       <h5>Available Rooms</h5>
-      <div *ngFor="let room of rooms" class="list-row p-3 mb-2 d-flex justify-content-between align-items-center">
-        <div>
-          <img
-            *ngIf="room.images?.length"
-            [src]="resolveImageUrl(room.images[0].image_url)"
-            alt="Room image"
-            class="room-thumb mb-2"
-          />
-          <strong>#{{ room.room_number }} - {{ room.type }}</strong>
-          <div class="muted">Price: {{ room.price }} / night</div>
-          <div class="muted">Status: {{ room.status }}</div>
+      <div class="rooms-scroll">
+        <div *ngFor="let room of rooms" class="list-row p-3 mb-2 d-flex justify-content-between align-items-center">
+          <div>
+            <img
+              *ngIf="room.images?.length"
+              [src]="resolveImageUrl(room.images[0].image_url)"
+              alt="Room image"
+              class="room-thumb mb-2"
+            />
+            <strong>#{{ room.room_number }} - {{ room.type }}</strong>
+            <div class="muted">Price: {{ room.price }} / night</div>
+            <div class="muted">Status: {{ room.status }}</div>
+          </div>
+          <button class="btn btn-success" (click)="openBookingModal(room)">Book</button>
         </div>
-        <button class="btn btn-success" (click)="openBookingModal(room)">Book</button>
       </div>
     </div>
   </div>
