@@ -6,6 +6,7 @@ const authMiddleware = require('../middleware/auth.middleware');
 
 router.use(authMiddleware);
 
+router.get('/status', aiController.status);
 router.get('/recommendations', aiController.smartRecommendations);
 router.post('/chatbot', aiController.chatbot);
 router.get('/revenue-prediction', aiController.revenuePrediction);

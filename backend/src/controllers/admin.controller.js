@@ -173,9 +173,10 @@ exports.reports = async (req, res, next) => {
 
 exports.listFeedbacks = async (req, res, next) => {
   try {
-    const { q, sentiment } = req.query;
+    const { q, sentiment, feedback_type } = req.query;
     const where = {};
     if (sentiment) where.sentiment = sentiment;
+    if (feedback_type) where.feedback_type = feedback_type;
 
     const feedbacks = await db.Feedback.findAll({
       where,
@@ -204,6 +205,9 @@ exports.listFeedbacks = async (req, res, next) => {
               .toLowerCase()
               .includes(s) ||
             String(f.booking?.room?.room_number || '')
+              .toLowerCase()
+              .includes(s) ||
+            String(f.feedback_type || '')
               .toLowerCase()
               .includes(s)
           );
